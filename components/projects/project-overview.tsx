@@ -11,7 +11,7 @@ export function ProjectOverview({ project }: { project: Project }) {
   const [description, setDescription] = React.useState(project.description)
 
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-8">
+    <div className="flex w-full flex-col gap-8">
       <section className="space-y-4">
         <div className="space-y-1.5">
           <Label htmlFor="p-name">Name</Label>

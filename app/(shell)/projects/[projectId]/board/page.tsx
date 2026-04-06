@@ -13,7 +13,7 @@ export default async function ProjectBoardPage({
   const features = featuresForProject(projectId)
 
   return (
-    <div className="mx-auto max-w-6xl">
+    <>
       <p className="mb-4 text-[13px] text-muted-foreground">
         Drag cards between columns (queued and running items stay fixed). Changes are local to this session.
       </p>
@@ -25,6 +25,6 @@ export default async function ProjectBoardPage({
       ) : (
         <KanbanBoard features={features} />
       )}
-    </div>
+    </>
   )
 }

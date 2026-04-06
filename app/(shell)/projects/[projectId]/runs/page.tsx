@@ -13,11 +13,11 @@ export default async function ProjectRunsPage({
   const runs = runsForProject(projectId)
 
   return (
-    <div className="mx-auto max-w-6xl">
+    <>
       <p className="mb-4 text-[13px] text-muted-foreground">
         Newest first. Expand a row for the run log (demo data).
       </p>
       <RunsTable runs={runs} />
-    </div>
+    </>
   )
 }

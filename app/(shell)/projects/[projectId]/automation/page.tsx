@@ -12,11 +12,11 @@ export default async function ProjectAutomationPage({
   if (!project) notFound()
 
   return (
-    <div className="mx-auto max-w-6xl">
+    <>
       <p className="mb-4 text-[13px] text-muted-foreground">
         Timing, automation toggle, and Git actions for scheduled runs (demo UI).
       </p>
       <ScheduleConfigPanel project={project} />
-    </div>
+    </>
   )
 }
