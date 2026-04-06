@@ -37,7 +37,7 @@ function AppHeader() {
   }, [pathname, projectId])
 
   return (
-    <header className="flex h-12 shrink-0 items-center border-b border-border px-6">
+    <header className="flex h-12 shrink-0 items-center border-b border-border bg-background/75 px-6 backdrop-blur-sm supports-[backdrop-filter]:bg-background/60">
       <h1 className="text-[15px] font-medium tracking-tight text-foreground">
         {title}
       </h1>
@@ -99,7 +99,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const badge = queueBadgeCount(q)
 
   return (
-    <div className="flex min-h-svh flex-col bg-background">
+    <div className="flex min-h-svh flex-col bg-transparent">
       <div className="flex min-h-0 flex-1">
         <aside className="flex w-[220px] shrink-0 flex-col border-r border-border bg-sidebar py-3">
           <div className="mb-4 flex items-center gap-2 px-4">

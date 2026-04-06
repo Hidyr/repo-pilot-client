@@ -11,7 +11,7 @@ export default function DesignSystemLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="flex min-h-dvh flex-col bg-background">
+    <div className="flex min-h-dvh flex-col bg-transparent">
       {children}
     </div>
   );

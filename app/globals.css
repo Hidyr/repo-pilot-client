@@ -83,6 +83,8 @@
   --sidebar-accent-foreground: #2a2824;
   --sidebar-border: #d6d0c4;
   --sidebar-ring: #b0aaa0;
+  /* Sparse subtle texture — larger tile = calmer (viewBox 360) */
+  --doodle-tile: 420px;
 }
 
 .dark {
@@ -117,16 +119,33 @@
   --sidebar-accent-foreground: #ffffff;
   --sidebar-border: #333333;
   --sidebar-ring: #525252;
+  --doodle-tile: 420px;
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
-  body {
-    @apply bg-background text-foreground antialiased;
-  }
+
+  /* Very low-contrast doodle texture — legibility first */
   html {
     @apply font-sans;
+    min-height: 100%;
+    background-color: var(--background);
+    background-image: url("/doodle-tile-light.svg");
+    background-repeat: repeat;
+    background-size: var(--doodle-tile) var(--doodle-tile);
+    background-position: 0 0;
+    background-attachment: fixed;
+  }
+
+  .dark html {
+    background-image: url("/doodle-tile-dark.svg");
+  }
+
+  body {
+    @apply text-foreground antialiased;
+    min-height: 100%;
+    background-color: transparent;
   }
 }
