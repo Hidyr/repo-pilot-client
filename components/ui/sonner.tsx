@@ -1,5 +1,7 @@
 "use client"
 
+import * as React from "react"
+import { useTheme } from "next-themes"
 import { Toaster as Sonner, type ToasterProps } from "sonner"
 import {
   CircleCheckIcon,
@@ -9,11 +11,13 @@ import {
   Loader2Icon,
 } from "lucide-react"
 
-/** RepoPilot is dark-first; avoids requiring ThemeProvider for toasts. */
 const Toaster = ({ ...props }: ToasterProps) => {
+  const { resolvedTheme } = useTheme()
+  const toastTheme = resolvedTheme === "light" ? "light" : "dark"
+
   return (
     <Sonner
-      theme="dark"
+      theme={toastTheme}
       className="toaster group"
       icons={{
         success: <CircleCheckIcon className="size-4" />,

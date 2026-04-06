@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useTheme } from "next-themes"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
@@ -14,7 +15,13 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { Label } from "@/components/ui/label"
 
 export default function SettingsPage() {
-  const [theme, setTheme] = React.useState<"dark" | "light">("dark")
+  const { resolvedTheme, setTheme } = useTheme()
+  const [mounted, setMounted] = React.useState(false)
+  React.useEffect(() => setMounted(true), [])
+
+  const themeSegment =
+    mounted && resolvedTheme === "light" ? "light" : "dark"
+
   const [maxRuns, setMaxRuns] = React.useState<string[]>(["4"])
   const [minimizeTray, setMinimizeTray] = React.useState(true)
   const [autostart, setAutostart] = React.useState(false)
@@ -31,11 +38,11 @@ export default function SettingsPage() {
             <ToggleGroup
               variant="outline"
               spacing={0}
-              value={[theme]}
+              value={[themeSegment]}
               onValueChange={(next) => {
                 if (next.length > 0) {
-                  setTheme(next[next.length - 1] as "dark" | "light")
-                  toast.message("Theme (demo — hook to next-themes later)")
+                  const v = next[next.length - 1]
+                  if (v === "light" || v === "dark") setTheme(v)
                 }
               }}
             >
@@ -45,7 +52,7 @@ export default function SettingsPage() {
           </SettingsRow>
           <SettingsRow className="items-start">
             <div className="min-w-0 flex-1">
-              <Label className="text-[13px] text-[#d0d0d0]">Max concurrent runs</Label>
+              <Label className="text-[13px] text-foreground">Max concurrent runs</Label>
               <p className="mt-0.5 text-[11px] text-muted-foreground">
                 Segmented control — only one value at a time (1–4).
               </p>

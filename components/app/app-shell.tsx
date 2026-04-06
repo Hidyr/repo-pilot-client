@@ -69,13 +69,13 @@ function NavLink({
         "flex items-center gap-2 rounded-md px-3 py-1.5 text-[13px] transition-colors",
         active
           ? "bg-sidebar-accent text-sidebar-accent-foreground"
-          : "text-sidebar-foreground hover:bg-[#222222] hover:text-[#dddddd]"
+          : "text-sidebar-foreground hover:bg-sidebar-accent/80 hover:text-sidebar-accent-foreground"
       )}
     >
       <Icon
         className={cn(
           "size-3.5 shrink-0 opacity-70",
-          active ? "text-[#cccccc]" : "text-[#777777]"
+          active ? "text-sidebar-accent-foreground" : "text-muted-foreground"
         )}
         strokeWidth={1.5}
       />
