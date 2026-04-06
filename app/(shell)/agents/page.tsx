@@ -5,7 +5,7 @@ import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
-import { Switch } from "@/components/ui/switch"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   SettingsGroup,
   SettingsRow,
@@ -35,9 +35,9 @@ function AgentRowView({
       <div className="flex shrink-0 flex-col items-end gap-2 sm:flex-row sm:items-center">
         <div className="flex items-center gap-2">
           <span className="text-[11px] text-muted-foreground">{agent.type}</span>
-          <Switch
+          <Checkbox
             checked={agent.enabled}
-            onCheckedChange={(v) => onToggle(agent.id, v)}
+            onCheckedChange={(v) => onToggle(agent.id, v === true)}
           />
         </div>
         <Button

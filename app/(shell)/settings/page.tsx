@@ -9,7 +9,7 @@ import {
   SettingsRow,
   SettingsRowText,
 } from "@/components/design-system/settings-group"
-import { Switch } from "@/components/ui/switch"
+import { Checkbox } from "@/components/ui/checkbox"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { Label } from "@/components/ui/label"
 
@@ -79,14 +79,20 @@ export default function SettingsPage() {
               title="Minimize to tray on close"
               description="Closing the window hides the app to your system tray. Right-click the tray icon to quit."
             />
-            <Switch checked={minimizeTray} onCheckedChange={setMinimizeTray} />
+            <Checkbox
+              checked={minimizeTray}
+              onCheckedChange={(c) => setMinimizeTray(c === true)}
+            />
           </SettingsRow>
           <SettingsRow className="items-start">
             <SettingsRowText
               title="Launch RepoPilot on system startup"
               description="App will start silently in the tray on login."
             />
-            <Switch checked={autostart} onCheckedChange={setAutostart} />
+            <Checkbox
+              checked={autostart}
+              onCheckedChange={(c) => setAutostart(c === true)}
+            />
           </SettingsRow>
         </SettingsGroup>
       </section>

@@ -25,7 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   SettingsGroup,
@@ -107,7 +107,7 @@ function OverviewPanel() {
         <code className="text-[11px] text-[#aaaaaa]">public/design-system.css</code>
         . Use <code className="text-[11px] text-[#aaaaaa]">--primary</code> for light
         CTAs, <code className="text-[11px] text-[#aaaaaa]">chrome</code> buttons for
-        secondary actions, and the Switch for the #30d158 track. Open{" "}
+        secondary actions, and checkboxes for boolean settings. Open{" "}
         <strong className="font-medium text-[#ccc]">RepoPilot (PRD)</strong> in the
         sidebar for queue UI, status chips, tables, dialogs, and toasts.
       </p>
@@ -157,7 +157,7 @@ function OverviewPanel() {
         </SettingsRow>
       </SettingsGroup>
 
-      <SectionLabel>Badges & switch</SectionLabel>
+      <SectionLabel>Badges & checkbox</SectionLabel>
       <SettingsGroup>
         <SettingsRow>
           <SettingsRowText
@@ -173,11 +173,11 @@ function OverviewPanel() {
               </span>
             }
           />
-          <Switch defaultChecked />
+          <Checkbox defaultChecked />
         </SettingsRow>
         <SettingsRow>
-          <SettingsRowText title="Toggle off" description="Track #3a3a3a" />
-          <Switch />
+          <SettingsRowText title="Unchecked" description="Off state" />
+          <Checkbox />
         </SettingsRow>
       </SettingsGroup>
 
@@ -296,14 +296,14 @@ function GeneralPanel() {
             title="Title Bar"
             description="Show title bar in agent layout"
           />
-          <Switch defaultChecked />
+          <Checkbox defaultChecked />
         </SettingsRow>
         <SettingsRow>
           <SettingsRowText
             title="Status Bar"
             description="Show status bar at the bottom of the window"
           />
-          <Switch defaultChecked />
+          <Checkbox defaultChecked />
         </SettingsRow>
         <SettingsRow>
           <SettingsRowText
@@ -335,7 +335,7 @@ function GeneralPanel() {
             }
             description="Show chats as editor tabs inside the chat area instead of the legacy stacked view"
           />
-          <Switch />
+          <Checkbox />
         </SettingsRow>
       </SettingsGroup>
     </div>
@@ -387,7 +387,7 @@ function RulesPanel() {
             title="Include third-party Plugins, Skills, and other configs"
             description="Automatically import agent configs from other tools"
           />
-          <Switch defaultChecked />
+          <Checkbox defaultChecked />
         </SettingsRow>
       </SettingsGroup>
 
@@ -473,7 +473,7 @@ function ToolsPanel() {
             title="Show Localhost Links in Browser"
             description="Automatically open localhost links in the Browser Tab"
           />
-          <Switch defaultChecked />
+          <Checkbox defaultChecked />
         </SettingsRow>
       </SettingsGroup>
 
@@ -501,7 +501,7 @@ function ToolsPanel() {
               </button>
             </div>
           </div>
-          <Switch defaultChecked />
+          <Checkbox defaultChecked />
         </SettingsRow>
         <SettingsRow>
           <div className="flex items-center gap-3">

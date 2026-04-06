@@ -13,7 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
 import {
   Tooltip,
   TooltipContent,
@@ -49,7 +48,10 @@ export function ScheduleConfigPanel({ project }: { project: Project }) {
             title="Enable automation"
             description="Run features on the configured schedule"
           />
-          <Switch checked={auto} onCheckedChange={setAuto} />
+          <Checkbox
+            checked={auto}
+            onCheckedChange={(c) => setAuto(c === true)}
+          />
         </SettingsRow>
       </SettingsGroup>
       <div className="border-t border-border px-4 py-3">
@@ -125,11 +127,17 @@ export function ScheduleConfigPanel({ project }: { project: Project }) {
           <SettingsGroup className="rounded-none border-0">
             <SettingsRow>
               <SettingsRowText title="Auto pull before run" />
-              <Switch checked={pull} onCheckedChange={setPull} />
+              <Checkbox
+                checked={pull}
+                onCheckedChange={(c) => setPull(c === true)}
+              />
             </SettingsRow>
             <SettingsRow>
               <SettingsRowText title="Auto commit after run" />
-              <Switch checked={commit} onCheckedChange={setCommit} />
+              <Checkbox
+                checked={commit}
+                onCheckedChange={(c) => setCommit(c === true)}
+              />
             </SettingsRow>
             <SettingsRow>
               <div className="flex min-w-0 flex-1 items-center gap-2">
