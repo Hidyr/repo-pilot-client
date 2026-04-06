@@ -1,12 +1,13 @@
 import { Clock } from "lucide-react"
 
+import { ShellPage } from "@/components/app/shell-page"
 import { DUMMY_QUEUE } from "@/lib/dummy-data"
 
 export default function QueuePage() {
   const q = DUMMY_QUEUE
 
   return (
-    <div className="mx-auto max-w-2xl">
+    <ShellPage maxWidth="comfortable">
       <p className="mb-6 text-[13px] text-muted-foreground">
         Live queue mirrors the bar at the bottom (static demo). In production this
         polls <code className="font-mono text-[11px] text-muted-foreground">GET /api/queue</code>.
@@ -38,6 +39,6 @@ export default function QueuePage() {
           ))}
         </ul>
       </div>
-    </div>
+    </ShellPage>
   )
 }

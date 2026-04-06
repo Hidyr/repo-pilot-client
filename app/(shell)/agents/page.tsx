@@ -11,6 +11,7 @@ import {
   SettingsRow,
   SettingsRowText,
 } from "@/components/design-system/settings-group"
+import { ShellPage } from "@/components/app/shell-page"
 import { DUMMY_AGENTS, type AgentRow } from "@/lib/dummy-data"
 
 function AgentRowView({
@@ -79,7 +80,7 @@ export default function AgentsPage() {
   const [agents, setAgents] = React.useState(DUMMY_AGENTS)
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <ShellPage maxWidth="standard">
       <p className="mb-6 text-[13px] text-muted-foreground">
         Configured agents for feature runs. Test calls are simulated.
       </p>
@@ -96,6 +97,6 @@ export default function AgentsPage() {
           />
         ))}
       </SettingsGroup>
-    </div>
+    </ShellPage>
   )
 }

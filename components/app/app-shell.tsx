@@ -126,7 +126,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </aside>
         <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
           <AppHeader />
-          <main className="min-h-0 flex-1 overflow-auto overscroll-contain p-6">
+          {/*
+            Horizontal padding matches header (px-6). Route bodies should use ShellPage
+            for max-width — avoids mixed mx-auto + max-w-* shifting content vs the sidebar.
+          */}
+          <main className="min-h-0 flex-1 overflow-auto overscroll-contain px-6 py-6">
             {children}
           </main>
         </div>

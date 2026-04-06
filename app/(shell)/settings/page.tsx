@@ -12,6 +12,7 @@ import {
 } from "@/components/design-system/settings-group"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+import { ShellPage } from "@/components/app/shell-page"
 import { Label } from "@/components/ui/label"
 
 export default function SettingsPage() {
@@ -27,7 +28,7 @@ export default function SettingsPage() {
   const [autostart, setAutostart] = React.useState(false)
 
   return (
-    <div className="mx-auto max-w-xl space-y-8">
+    <ShellPage maxWidth="narrow" className="space-y-8">
       <section>
         <h2 className="mb-3 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
           General
@@ -130,6 +131,6 @@ export default function SettingsPage() {
           </SettingsRow>
         </SettingsGroup>
       </section>
-    </div>
+    </ShellPage>
   )
 }
