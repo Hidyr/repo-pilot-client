@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Design system</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="design-system.css">
+</head>
+<body>
+<div class="shell">
+  <div class="sidebar">
+    <div class="user-block">
+      <div class="user-block-row">
+        <div class="avatar">B</div>
+        <div>
+          <div class="user-email">bamideletoluwap@gmail.c...</div>
+          <div class="user-plan">Pro Plan</div>
+        </div>
+      </div>
+    </div>
+    <div class="search-box">
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="4.5" stroke="#666" stroke-width="1.2"/><path d="M10.5 10.5L14 14" stroke="#666" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Search settings ⌘F
+    </div>
+
+    <div class="nav-item active" data-nav="foundation" role="button" tabindex="0">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M8 2.5l5.5 3v5L8 14l-5.5-3.5v-5L8 2.5z" stroke="#777" stroke-width="1.2" stroke-linejoin="round"/><path d="M8 6v4M6 8h4" stroke="#777" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Foundation
+    </div>
+    <div class="nav-item" data-nav="general" role="button" tabindex="0">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="5" height="5" rx="1" stroke="#777" stroke-width="1.2"/><rect x="9" y="2" width="5" height="5" rx="1" stroke="#777" stroke-width="1.2"/><rect x="2" y="9" width="5" height="5" rx="1" stroke="#777" stroke-width="1.2"/><rect x="9" y="9" width="5" height="5" rx="1" stroke="#777" stroke-width="1.2"/></svg>
+      General
+    </div>
+    <div class="nav-item" data-nav="plan" role="button" tabindex="0">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="1.5" stroke="#777" stroke-width="1.2"/><path d="M5 8h6M8 5v6" stroke="#777" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Plan & Usage
+    </div>
+    <div class="nav-item" data-nav="agents" role="button" tabindex="0">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="6" r="2.5" stroke="#777" stroke-width="1.2"/><path d="M2 13c0-3 2.686-5 6-5s6 2 6 5" stroke="#777" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Agents
+    </div>
+    <div class="nav-item" data-nav="tab" role="button" tabindex="0">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="#777" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Tab
+    </div>
+    <div class="nav-item" data-nav="models" role="button" tabindex="0">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="10" rx="1.5" stroke="#777" stroke-width="1.2"/><path d="M5 7h4M5 9.5h6" stroke="#777" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Models
+    </div>
+    <div class="nav-item" data-nav="cloud" role="button" tabindex="0">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M2 13c0-4 2-6 4-7M14 13c0-4-2-6-4-7M8 6v3" stroke="#777" stroke-width="1.2" stroke-linecap="round"/><circle cx="8" cy="4.5" r="1.5" stroke="#777" stroke-width="1.2"/></svg>
+      Cloud Agents
+    </div>
+    <div class="nav-divider"></div>
+    <div class="nav-item" data-nav="plugins" role="button" tabindex="0">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M8 2v2M8 12v2M2 8h2M12 8h2" stroke="#777" stroke-width="1.2" stroke-linecap="round"/><circle cx="8" cy="8" r="3" stroke="#777" stroke-width="1.2"/></svg>
+      Plugins
+    </div>
+    <div class="nav-item" data-nav="rules" role="button" tabindex="0">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="3" rx="1" stroke="#777" stroke-width="1.2"/><rect x="2" y="6.5" width="12" height="3" rx="1" stroke="#777" stroke-width="1.2"/><rect x="2" y="11" width="7" height="3" rx="1" stroke="#777" stroke-width="1.2"/></svg>
+      Rules, Skills, Subagents
+    </div>
+    <div class="nav-item" data-nav="tools" role="button" tabindex="0">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M6 3H3v3M13 3h-3M3 10v3h3M10 13h3v-3" stroke="#777" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Tools & MCPs
+    </div>
+    <div class="nav-item" data-nav="hooks" role="button" tabindex="0">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M8 2L9.6 6.4H14L10.4 9.1 11.7 13.5 8 11 4.3 13.5 5.6 9.1 2 6.4h4.4z" stroke="#777" stroke-width="1.1"/></svg>
+      Hooks
+    </div>
+    <div class="nav-divider"></div>
+    <div class="nav-item" data-nav="indexing" role="button" tabindex="0">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="#777" stroke-width="1.2"/><path d="M5.5 8h5M8 5.5v5" stroke="#777" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Indexing & Docs
+    </div>
+    <div class="nav-item" data-nav="network" role="button" tabindex="0">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="#777" stroke-width="1.2"/><path d="M2.5 8h11" stroke="#777" stroke-width="1.2"/><path d="M8 2.5c-2 2-2 4 0 11" stroke="#777" stroke-width="1.2"/></svg>
+      Network
+    </div>
+    <div class="nav-item" data-nav="beta" role="button" tabindex="0">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M8 2L2 5v4c0 3 3 5 6 6 3-1 6-3 6-6V5z" stroke="#777" stroke-width="1.2" stroke-linejoin="round"/></svg>
+      Beta
+    </div>
+    <div class="nav-divider"></div>
+    <div class="nav-item" data-nav="marketplace" role="button" tabindex="0">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="1.5" stroke="#777" stroke-width="1.2"/><path d="M5 8h4M5 5.5h6M5 10.5h3" stroke="#777" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Marketplace
+    </div>
+    <div class="nav-item" data-nav="docs" role="button" tabindex="0">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="10" height="12" rx="1" stroke="#777" stroke-width="1.2"/><path d="M5 6h5M5 8.5h5M5 11h3" stroke="#777" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Docs ↗
+    </div>
+    <div class="nav-divider"></div>
+    <div class="nav-item" data-nav="repopilot" role="button" tabindex="0">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M8 1.5L9.5 5h3.5L11 7.5l1 3.5-4-2.5-4 2.5 1-3.5L3 5h3.5L8 1.5z" stroke="#777" stroke-width="1.2" stroke-linejoin="round"/></svg>
+      RepoPilot
+    </div>
+    <div class="nav-item" data-nav="ref-rules" role="button" tabindex="0">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="5" height="5" rx="1" stroke="#777" stroke-width="1.2"/><rect x="9" y="2" width="5" height="5" rx="1" stroke="#777" stroke-width="1.2"/><rect x="2" y="9" width="5" height="5" rx="1" stroke="#777" stroke-width="1.2"/><rect x="9" y="9" width="5" height="5" rx="1" stroke="#777" stroke-width="1.2"/></svg>
+      UI · Rules
+    </div>
+    <div class="nav-item" data-nav="ref-tools" role="button" tabindex="0">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M5 4l2 2-2 2M11 4l-2 2 2 2M8 3v10" stroke="#777" stroke-width="1.2" stroke-linecap="round"/></svg>
+      UI · Tools
+    </div>
+    <div class="nav-item" data-nav="ref-index" role="button" tabindex="0">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M3 13V3M8 13V7M13 13V10" stroke="#777" stroke-width="1.2" stroke-linecap="round"/><circle cx="3" cy="3" r="1.5" stroke="#777" stroke-width="1.2"/><circle cx="8" cy="7" r="1.5" stroke="#777" stroke-width="1.2"/><circle cx="13" cy="10" r="1.5" stroke="#777" stroke-width="1.2"/></svg>
+      UI · Index
+    </div>
+    <div class="nav-item" data-nav="ref-cloud" role="button" tabindex="0">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M4 12h8a3 3 0 000-6 3.5 3.5 0 00-6.8-1.1A3 3 0 004 12z" stroke="#777" stroke-width="1.2" stroke-linejoin="round"/></svg>
+      UI · Cloud
+    </div>
+    <div class="nav-item" data-nav="ref-autorun" role="button" tabindex="0">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M8 2v4l2.5 2.5M8 14a6 6 0 100-12 6 6 0 000 12z" stroke="#777" stroke-width="1.2" stroke-linecap="round"/></svg>
+      UI · Auto-run
+    </div>
+    <div class="nav-item" data-nav="ref-agents2" role="button" tabindex="0">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5.5" r="2" stroke="#777" stroke-width="1.2"/><path d="M3 13c0-2.5 2-4 5-4s5 1.5 5 4" stroke="#777" stroke-width="1.2" stroke-linecap="round"/></svg>
+      UI · Agents
+    </div>
+    <div class="nav-item" data-nav="ref-voice" role="button" tabindex="0">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M8 2v10M5 5v4M11 5v4M4 12h8" stroke="#777" stroke-width="1.2" stroke-linecap="round"/></svg>
+      UI · Voice
+    </div>
+    <div class="nav-item" data-nav="ref-prompts" role="button" tabindex="0">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="10" rx="1.5" stroke="#777" stroke-width="1.2"/><path d="M5 7h6M5 10h4" stroke="#777" stroke-width="1.2" stroke-linecap="round"/></svg>
+      UI · Prompts
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="page-panel active" id="panel-foundation" data-panel="foundation">
+      <div class="page-title">Foundation</div>
+      <p class="setting-desc" style="margin-top:-20px;margin-bottom:8px;max-width:520px;">Semantic tokens (<code style="color:var(--ds-text-muted);font-size:11px;">--ds-*</code>) and primitives. Source: <code style="color:var(--ds-text-muted);font-size:11px;">design-system.css</code> alongside this file.</p>
+
+      <div class="section-label">Surfaces</div>
+      <div class="settings-group">
+        <div class="setting-row">
+          <div class="token-swatch" style="background:var(--ds-bg-app)"></div>
+          <div class="setting-info">
+            <div class="setting-name">App / main</div>
+            <div class="token-meta">--ds-bg-app · #1a1a1a</div>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div class="token-swatch" style="background:var(--ds-bg-sidebar)"></div>
+          <div class="setting-info">
+            <div class="setting-name">Sidebar</div>
+            <div class="token-meta">--ds-bg-sidebar · #161616</div>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div class="token-swatch" style="background:var(--ds-bg-elevated)"></div>
+          <div class="setting-info">
+            <div class="setting-name">Elevated rows</div>
+            <div class="token-meta">--ds-bg-elevated · #1f1f1f</div>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div class="token-swatch" style="background:var(--ds-bg-control)"></div>
+          <div class="setting-info">
+            <div class="setting-name">Controls</div>
+            <div class="token-meta">--ds-bg-control · #2a2a2a</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-label">Text</div>
+      <div class="settings-group">
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="ds-type-sample-title">Page title</div>
+            <div class="token-meta">--ds-text-lg / --ds-text-primary</div>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="ds-type-sample-section">Section label</div>
+            <div class="token-meta">--ds-text-2xs · --ds-text-faint</div>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="ds-type-sample-body">Setting name</div>
+            <div class="ds-type-sample-desc">Supporting description in one quiet line.</div>
+            <div class="token-meta">--ds-text-base label · --ds-text-2xs desc</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-label">Accent & status</div>
+      <div class="settings-group">
+        <div class="setting-row">
+          <div class="token-swatch" style="background:var(--ds-accent-on)"></div>
+          <div class="setting-info">
+            <div class="setting-name">Toggle on</div>
+            <div class="token-meta">--ds-accent-on</div>
+          </div>
+          <div class="toggle on" role="presentation" aria-hidden="true"></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Badge <span class="badge-new">NEW</span></div>
+            <div class="token-meta">.badge-new</div>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Pill</div>
+            <div class="token-meta">.pill · .pill.ok</div>
+          </div>
+          <div class="ds-preview-row">
+            <span class="pill">Idle</span>
+            <span class="pill ok">Ready</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-label">Radius</div>
+      <div class="settings-group">
+        <div class="setting-row">
+          <div class="ds-preview-row">
+            <div class="radius-chip sm" title="--ds-radius-sm"></div>
+            <div class="radius-chip md" title="--ds-radius-md"></div>
+            <div class="radius-chip lg" title="--ds-radius-lg"></div>
+          </div>
+          <div class="setting-info" style="text-align:right;">
+            <div class="setting-name">6px · 8px · 12px</div>
+            <div class="token-meta">groups, rows, shell</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-label">Components</div>
+      <div class="settings-group">
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Button</div>
+            <div class="setting-desc">Secondary chrome; hairline border.</div>
+          </div>
+          <button type="button" class="btn">Action</button>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Select</div>
+            <div class="setting-desc">Same surface as button.</div>
+          </div>
+          <div class="select-wrap">Option <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 4l3 3 3-3" stroke="#aaa" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Toggle</div>
+            <div class="setting-desc">Off state for comparison.</div>
+          </div>
+          <div class="toggle off" role="presentation" aria-hidden="true"></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Usage bar</div>
+            <div class="setting-desc">Neutral fill vs accent.</div>
+          </div>
+          <div class="stat-inline">
+            <div class="progress-track"><div class="progress-fill" style="width:35%"></div></div>
+            <div class="progress-track"><div class="progress-fill accent" style="width:62%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-panel" id="panel-general" data-panel="general">
+      <div class="page-title">General</div>
+
+      <div class="settings-group">
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Cursor Account</div>
+            <div class="setting-desc">Manage your account and billing</div>
+          </div>
+          <button type="button" class="btn">Open ↗</button>
+        </div>
+      </div>
+
+      <div class="section-label">Preferences</div>
+      <div class="settings-group">
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Editor Settings</div>
+            <div class="setting-desc">Configure font, formatting, minimap and more</div>
+          </div>
+          <button type="button" class="btn">Open</button>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Keyboard Shortcuts</div>
+            <div class="setting-desc">Configure keyboard shortcuts</div>
+          </div>
+          <button type="button" class="btn">Open</button>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Import Settings from VS Code</div>
+            <div class="setting-desc">Import settings, extensions, and keybindings from VS Code</div>
+          </div>
+          <button type="button" class="btn">Import</button>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Reset "Don't Ask Again" Dialogs</div>
+            <div class="setting-desc">See warnings and tips that you've hidden</div>
+          </div>
+          <button type="button" class="btn">Show</button>
+        </div>
+      </div>
+
+      <div class="section-label">Layout</div>
+      <div class="settings-group">
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Title Bar</div>
+            <div class="setting-desc">Show title bar in agent layout</div>
+          </div>
+          <div class="toggle on" role="switch" aria-checked="true" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Status Bar</div>
+            <div class="setting-desc">Show status bar at the bottom of the window</div>
+          </div>
+          <div class="toggle on" role="switch" aria-checked="true" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Review Control Location</div>
+            <div class="setting-desc">Show inline diff review controls in top level breadcrumbs or floating island</div>
+          </div>
+          <div class="select-wrap">
+            Breadcrumb
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 4l3 3 3-3" stroke="#aaa" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Auto-hide editor when empty</div>
+            <div class="setting-desc">When all editors are closed, hide the editor area and maximize chat</div>
+          </div>
+          <div class="toggle off" role="switch" aria-checked="false" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Open chat as editor tabs <span class="badge-new">NEW</span></div>
+            <div class="setting-desc">Show chats as editor tabs inside the chat area instead of the legacy stacked view</div>
+          </div>
+          <div class="toggle off" role="switch" aria-checked="false" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-panel" id="panel-plan" data-panel="plan">
+      <div class="page-title">Plan & Usage</div>
+      <div class="settings-group">
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Current plan</div>
+            <div class="setting-desc">Pro — billed monthly</div>
+          </div>
+          <button type="button" class="btn">Manage</button>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Fast requests</div>
+            <div class="setting-desc">Resets on your billing date</div>
+          </div>
+          <div class="stat-inline">
+            <div class="progress-track" aria-hidden="true"><div class="progress-fill accent" style="width:42%"></div></div>
+            <span class="stat-value">1,240</span><span class="stat-unit">/ 3,000</span>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Slow requests</div>
+            <div class="setting-desc">Included with Pro</div>
+          </div>
+          <div class="stat-inline">
+            <div class="progress-track" aria-hidden="true"><div class="progress-fill" style="width:18%"></div></div>
+            <span class="stat-value">89</span><span class="stat-unit">/ unlimited</span>
+          </div>
+        </div>
+      </div>
+      <div class="section-label">Limits</div>
+      <div class="settings-group">
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Max tab context</div>
+            <div class="setting-desc">Files included automatically in agent context</div>
+          </div>
+          <div class="select-wrap">Standard <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 4l3 3 3-3" stroke="#aaa" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Usage alerts</div>
+            <div class="setting-desc">Email when you approach plan limits</div>
+          </div>
+          <div class="toggle on" role="switch" aria-checked="true" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-panel" id="panel-agents" data-panel="agents">
+      <div class="page-title">Agents</div>
+      <div class="settings-group">
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Default agent mode</div>
+            <div class="setting-desc">How new agent sessions start</div>
+          </div>
+          <div class="select-wrap">Agent <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 4l3 3 3-3" stroke="#aaa" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Auto-run terminal commands</div>
+            <div class="setting-desc">Require approval before running shell commands</div>
+          </div>
+          <div class="toggle on" role="switch" aria-checked="true" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Parallel agents</div>
+            <div class="setting-desc">Maximum concurrent background agents</div>
+          </div>
+          <div class="select-wrap">2 <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 4l3 3 3-3" stroke="#aaa" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+      </div>
+      <div class="section-label">Behavior</div>
+      <div class="settings-group">
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Include git status in context</div>
+            <div class="setting-desc">Let agents see branch and diff summary</div>
+          </div>
+          <div class="toggle on" role="switch" aria-checked="true" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Auto-apply safe edits</div>
+            <div class="setting-desc">Skip confirmation for low-risk file changes</div>
+          </div>
+          <div class="toggle off" role="switch" aria-checked="false" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-panel" id="panel-tab" data-panel="tab">
+      <div class="page-title">Tab</div>
+      <div class="settings-group">
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Tab completion</div>
+            <div class="setting-desc">Inline suggestions while typing</div>
+          </div>
+          <div class="toggle on" role="switch" aria-checked="true" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Partial accepts</div>
+            <div class="setting-desc">Accept suggestion word-by-word</div>
+          </div>
+          <div class="toggle on" role="switch" aria-checked="true" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Trigger mode</div>
+            <div class="setting-desc">When suggestions appear</div>
+          </div>
+          <div class="select-wrap">Automatic <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 4l3 3 3-3" stroke="#aaa" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-panel" id="panel-models" data-panel="models">
+      <div class="page-title">Models</div>
+      <div class="section-label">Default models</div>
+      <div class="settings-group">
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Agent</div>
+            <div class="setting-desc">Long-running tasks and refactors</div>
+          </div>
+          <div class="select-wrap">Auto <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 4l3 3 3-3" stroke="#aaa" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Tab</div>
+            <div class="setting-desc">Fast inline completions</div>
+          </div>
+          <div class="select-wrap">Same as agent <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 4l3 3 3-3" stroke="#aaa" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+      </div>
+      <div class="section-label">Overrides</div>
+      <div class="settings-group">
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Max context length</div>
+            <div class="setting-desc">Cap tokens sent per request</div>
+          </div>
+          <div class="toggle off" role="switch" aria-checked="false" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-panel" id="panel-cloud" data-panel="cloud">
+      <div class="page-title">Cloud Agents</div>
+      <div class="settings-group">
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Remote execution</div>
+            <div class="setting-desc">Run agents in isolated cloud environments</div>
+          </div>
+          <div class="toggle off" role="switch" aria-checked="false" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Default region</div>
+            <div class="setting-desc">Closest to your team</div>
+          </div>
+          <div class="select-wrap">Auto <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 4l3 3 3-3" stroke="#aaa" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Artifact retention</div>
+            <div class="setting-desc">How long build outputs are kept</div>
+          </div>
+          <div class="select-wrap">7 days <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 4l3 3 3-3" stroke="#aaa" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-panel" id="panel-plugins" data-panel="plugins">
+      <div class="page-title">Plugins</div>
+      <div class="settings-group">
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Linter integrations</div>
+            <div class="setting-desc">Surface diagnostics in the editor</div>
+          </div>
+          <div class="toggle on" role="switch" aria-checked="true" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Format on save</div>
+            <div class="setting-desc">Run formatters from installed extensions</div>
+          </div>
+          <div class="toggle on" role="switch" aria-checked="true" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Browse marketplace</div>
+            <div class="setting-desc">Discover compatible extensions</div>
+          </div>
+          <button type="button" class="btn">Open</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-panel" id="panel-rules" data-panel="rules">
+      <div class="page-title">Rules, Skills, Subagents</div>
+      <div class="settings-group">
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Project rules</div>
+            <div class="setting-desc">`.cursor/rules` and repo-level guidance</div>
+          </div>
+          <span class="pill ok">Active</span>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">User skills</div>
+            <div class="setting-desc">Reusable instructions from your library</div>
+          </div>
+          <button type="button" class="btn">Manage</button>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Subagent templates</div>
+            <div class="setting-desc">Spawn focused workers for parallel work</div>
+          </div>
+          <div class="toggle on" role="switch" aria-checked="true" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-panel" id="panel-tools" data-panel="tools">
+      <div class="page-title">Tools & MCPs</div>
+      <div class="section-label">MCP servers</div>
+      <div class="settings-group">
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Filesystem</div>
+            <div class="setting-desc">Scoped read/write for the workspace</div>
+          </div>
+          <div class="toggle on" role="switch" aria-checked="true" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Git</div>
+            <div class="setting-desc">Status, diff, and commit helpers</div>
+          </div>
+          <div class="toggle on" role="switch" aria-checked="true" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Custom: design tokens</div>
+            <div class="setting-desc">localhost · last connected 2h ago</div>
+          </div>
+          <div class="toggle off" role="switch" aria-checked="false" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+      </div>
+      <div class="section-label">Config</div>
+      <div class="settings-group">
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Edit MCP config</div>
+            <div class="setting-desc">`mcp.json` for this workspace</div>
+          </div>
+          <button type="button" class="btn">Open</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-panel" id="panel-hooks" data-panel="hooks">
+      <div class="page-title">Hooks</div>
+      <div class="settings-group">
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Before submit</div>
+            <div class="setting-desc">Run checks before sending a prompt</div>
+          </div>
+          <div class="toggle off" role="switch" aria-checked="false" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">After file edit</div>
+            <div class="setting-desc">Notify external tools when files change</div>
+          </div>
+          <div class="toggle on" role="switch" aria-checked="true" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Hook scripts folder</div>
+            <div class="setting-desc">`.cursor/hooks` in this project</div>
+          </div>
+          <button type="button" class="btn">Reveal</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-panel" id="panel-indexing" data-panel="indexing">
+      <div class="page-title">Indexing & Docs</div>
+      <div class="settings-group">
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Codebase index</div>
+            <div class="setting-desc">Last synced · 12k symbols</div>
+          </div>
+          <span class="pill ok">Ready</span>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Documentation embeddings</div>
+            <div class="setting-desc">Include linked docs in retrieval</div>
+          </div>
+          <div class="toggle on" role="switch" aria-checked="true" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Respect .gitignore</div>
+            <div class="setting-desc">Skip ignored paths when indexing</div>
+          </div>
+          <div class="toggle on" role="switch" aria-checked="true" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+      </div>
+      <div class="section-label">Include paths</div>
+      <div class="settings-group">
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Additional folders</div>
+            <div class="setting-desc">Extra roots merged into the index</div>
+          </div>
+          <button type="button" class="btn">Add</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-panel" id="panel-network" data-panel="network">
+      <div class="page-title">Network</div>
+      <div class="settings-group">
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">HTTP proxy</div>
+            <div class="setting-desc">Use system proxy settings</div>
+          </div>
+          <div class="toggle on" role="switch" aria-checked="true" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Strict SSL</div>
+            <div class="setting-desc">Verify certificates for API calls</div>
+          </div>
+          <div class="toggle on" role="switch" aria-checked="true" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Connectivity check</div>
+            <div class="setting-desc">Ping Cursor services</div>
+          </div>
+          <button type="button" class="btn">Run</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-panel" id="panel-beta" data-panel="beta">
+      <div class="page-title">Beta</div>
+      <div class="settings-group">
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Experimental layout <span class="badge-new">NEW</span></div>
+            <div class="setting-desc">Preview upcoming shell and panel behavior</div>
+          </div>
+          <div class="toggle off" role="switch" aria-checked="false" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Early model access</div>
+            <div class="setting-desc">Opt in to pre-release models when available</div>
+          </div>
+          <div class="toggle off" role="switch" aria-checked="false" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Crash reports</div>
+            <div class="setting-desc">Send anonymous stability data</div>
+          </div>
+          <div class="toggle on" role="switch" aria-checked="true" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-panel" id="panel-marketplace" data-panel="marketplace">
+      <div class="page-title">Marketplace</div>
+      <div class="settings-group">
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Curated themes</div>
+            <div class="setting-desc">Dark-first UI packs tuned for long sessions</div>
+          </div>
+          <button type="button" class="btn">Browse</button>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Agent recipes</div>
+            <div class="setting-desc">Starter flows for common workflows</div>
+          </div>
+          <button type="button" class="btn">Browse</button>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Auto-update extensions</div>
+            <div class="setting-desc">Install patch releases in the background</div>
+          </div>
+          <div class="toggle on" role="switch" aria-checked="true" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-panel" id="panel-docs" data-panel="docs">
+      <div class="page-title">Docs</div>
+      <div class="settings-group">
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Product documentation</div>
+            <div class="setting-desc">Guides, API reference, and changelog</div>
+          </div>
+          <a class="btn" href="https://cursor.com/docs" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;text-decoration:none;">Open ↗</a>
+        </div>
+      </div>
+      <p class="empty-hint">External link opens in your default browser — same shell and typography as other settings rows.</p>
+    </div>
+
+    <div class="page-panel" id="panel-repopilot" data-panel="repopilot">
+      <div class="page-title">RepoPilot patterns</div>
+      <p class="page-subtitle">Neutral chips and borders (same family as filter pills). Interactive examples: Next app <strong style="font-weight:500;color:var(--ds-text-muted)">/design-system → RepoPilot (PRD)</strong>.</p>
+
+      <div class="section-label">Status badges</div>
+      <div class="rp-badges-row">
+        <span class="rp-badge rp-badge--pending"><span class="rp-dot" style="opacity:.5"></span> pending</span>
+        <span class="rp-badge rp-badge--queued">queued</span>
+        <span class="rp-badge rp-badge--waiting">waiting</span>
+        <span class="rp-badge rp-badge--in_progress"><span class="rp-dot rp-dot--pulse"></span> in progress</span>
+        <span class="rp-badge rp-badge--active"><span class="rp-dot rp-dot--pulse"></span> active</span>
+        <span class="rp-badge rp-badge--running"><span class="rp-dot rp-dot--pulse"></span> running</span>
+        <span class="rp-badge rp-badge--done">done</span>
+        <span class="rp-badge rp-badge--success">success</span>
+        <span class="rp-badge rp-badge--failed">failed</span>
+        <span class="rp-badge rp-badge--skipped">skipped</span>
+      </div>
+
+      <div class="section-label">Queue status bar</div>
+      <div class="rp-queue-idle"><span class="rp-dot" style="background:#666;margin-right:8px"></span>Queue idle — 0/4 slots</div>
+      <div class="rp-queue-expanded">
+        <div class="rp-queue-head"><span>Running (2/4) · Waiting (3)</span><span style="color:var(--ds-text-subtle)">Collapse</span></div>
+        <div class="rp-queue-chips">
+          <div class="rp-job-chip rp-job-chip--active"><span class="rp-dot rp-dot--pulse"></span><span class="setting-name" style="margin:0">my-app — Add dark mode</span></div>
+          <div class="rp-job-chip"><span class="rp-dot" style="opacity:.55"></span><span class="setting-name" style="margin:0">shop — Checkout</span><span style="margin-left:auto;color:var(--ds-text-subtle);cursor:default">✕</span></div>
+        </div>
+      </div>
+
+      <div class="section-label">Run log viewer</div>
+      <div class="rp-log">
+        <div><span class="git">[GIT]</span> Pulling latest changes…</div>
+        <div><span class="agent">[AGENT]</span> Starting…</div>
+        <div><span class="err">[ERROR]</span> Command timed out</div>
+      </div>
+    </div>
+
+    <!-- UI-ref replicas: repo-pilot-client/UI-ref/ui-*.png -->
+    <div class="page-panel" id="panel-ref-rules" data-panel="ref-rules">
+      <p class="ref-note">UI-ref · ui-1 — Rules, Skills, Subagents</p>
+      <div class="page-title">Rules, Skills, Subagents</div>
+      <p class="page-subtitle">Provide domain-specific knowledge and workflows for the agent.</p>
+      <div class="filter-pills">
+        <span class="filter-pill active">All</span>
+        <span class="filter-pill">User</span>
+        <span class="filter-pill">repo-pilot-root</span>
+      </div>
+      <div class="settings-group">
+        <div class="setting-row feature-row">
+          <div class="setting-info">
+            <div class="setting-name">Include third-party Plugins, Skills, and other configs</div>
+            <div class="setting-desc">Automatically import agent configs from other tools</div>
+          </div>
+          <div class="toggle on" role="switch" aria-checked="true" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+      </div>
+      <div class="ds-block-head">
+        <div class="ds-block-head-title">Rules <i class="info-ic" title="">i</i></div>
+        <button type="button" class="btn-primary-solid">+ New</button>
+      </div>
+      <p class="block-lead">Create rules to scope edits, add context, or enforce style.</p>
+      <div class="empty-panel">
+        <div class="empty-panel-title">No Rules Yet</div>
+        <div class="empty-panel-desc">Create rules to guide Agent behavior.</div>
+        <button type="button" class="btn-outline">New User Rule</button>
+      </div>
+      <div class="ds-block-head">
+        <div class="ds-block-head-title">Skills <i class="info-ic" title="">i</i></div>
+        <button type="button" class="btn-primary-solid">+ New</button>
+      </div>
+      <p class="block-lead">Teach the Agent new capabilities with composable instructions.</p>
+      <div class="skill-card">
+        <div class="skill-card-title">find-skills</div>
+        <div class="skill-card-desc">Helps users discover and install agent skills when they ask how to do X, find a skill for Y, or want to extend capabilities. Use when the user wants to add skills, browse capabilities, or asks what skills exist…</div>
+      </div>
+      <div class="ds-block-head">
+        <div class="ds-block-head-title">Subagents <i class="info-ic" title="">i</i></div>
+        <button type="button" class="btn-primary-solid">+ New</button>
+      </div>
+      <p class="block-lead">Launch specialized agents for research, planning, or implementation.</p>
+      <div class="empty-panel">
+        <div class="empty-panel-title">No Subagents Yet</div>
+        <div class="empty-panel-desc">Create specialized agents to handle focused tasks.</div>
+        <button type="button" class="btn-outline">New Subagent</button>
+      </div>
+    </div>
+
+    <div class="page-panel" id="panel-ref-tools" data-panel="ref-tools">
+      <p class="ref-note">UI-ref · ui-2 — Tools</p>
+      <div class="page-title">Tools</div>
+      <div class="section-label">Browser</div>
+      <div class="settings-group">
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name setting-name-strong">Browser Automation</div>
+            <div class="setting-desc">Browser automation disabled</div>
+          </div>
+          <div class="select-wrap select-wrap-chev">Off<span class="chev-double"><span>▲</span><span>▼</span></span></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name setting-name-strong">Show Localhost Links in Browser</div>
+            <div class="setting-desc">Automatically open localhost links in the Browser Tab</div>
+          </div>
+          <div class="toggle on" role="switch" aria-checked="true" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+      </div>
+      <div class="section-label">Installed MCP Servers</div>
+      <div class="settings-group">
+        <div class="setting-row">
+          <div class="mcp-row">
+            <div class="mcp-icon-wrap">
+              <div class="mcp-icon">P</div>
+              <span class="mcp-status-dot" aria-hidden="true"></span>
+            </div>
+            <div class="setting-info">
+              <div class="setting-name setting-name-strong">pencil</div>
+              <div class="mcp-meta-link">13 tools enabled <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="opacity:.6"><path d="M3 4l2 2 2-2" stroke="currentColor" stroke-width="1.2"/></svg></div>
+            </div>
+          </div>
+          <div class="toggle on" role="switch" aria-checked="true" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+        <div class="setting-row">
+          <div class="mcp-row">
+            <div class="mcp-icon-wrap">
+              <div class="mcp-icon" style="font-size:18px;font-weight:400">+</div>
+            </div>
+            <div class="setting-info">
+              <div class="setting-name setting-name-strong">New MCP Server</div>
+              <div class="setting-desc">Add a Custom MCP Server</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-panel" id="panel-ref-index" data-panel="ref-index">
+      <p class="ref-note">UI-ref · ui-3 — Indexing &amp; Docs</p>
+      <div class="page-title">Indexing &amp; Docs</div>
+      <div class="section-label">Codebase</div>
+      <div class="settings-group card-pad">
+        <div>
+          <div class="setting-name setting-name-strong" style="margin-bottom:6px;">Codebase Indexing <i class="info-ic" style="margin-left:4px;">?</i></div>
+          <p class="setting-desc" style="max-width:100%;margin-bottom:14px;">Index your codebase for improved contextual understanding. Your codebase is stored on <span class="inline-link">cloud</span> servers.</p>
+          <div class="index-progress-head">
+            <span class="index-progress-label">Progress</span>
+            <span class="index-progress-pct">100%</span>
+          </div>
+          <div class="progress-bar-tall"><div class="progress-fill" style="width:100%"></div></div>
+          <div class="index-files-note">23 files</div>
+          <div class="card-actions-right">
+            <button type="button" class="btn-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" style="opacity:.85"><path d="M8 3v10M8 3a5 5 0 015 5M8 3a5 5 0 00-5 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg> Sync</button>
+            <button type="button" class="btn-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" style="opacity:.85"><path d="M3 4h10M6 4V2.5a1 1 0 011-1h2a1 1 0 011 1V4M5 4v9a1 1 0 001 1h4a1 1 0 001-1V4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg> Delete Index</button>
+          </div>
+        </div>
+      </div>
+      <div class="settings-group">
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name setting-name-strong">Index New Folders</div>
+            <div class="setting-desc">Automatically index new folders when they are created</div>
+          </div>
+          <div class="toggle on" role="switch" aria-checked="true" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name setting-name-strong">Ignore Files in .cursorignore</div>
+            <div class="setting-desc"><span class="inline-link">View included files</span></div>
+          </div>
+          <button type="button" class="btn">Edit</button>
+        </div>
+      </div>
+      <div class="docs-head-row">
+        <div class="section-label" style="margin-top:0;">Docs</div>
+        <button type="button" class="btn-primary-solid">+ Add Doc</button>
+      </div>
+      <p class="block-lead" style="margin-top:0;">Add documentation to give your Agent additional context.</p>
+      <div class="empty-panel" style="padding:48px 20px;">
+        <div class="empty-panel-title">No Docs Added</div>
+        <div class="empty-panel-desc">Add documentation from your workspace or an external URL to improve your Agent’s answers.</div>
+        <button type="button" class="btn-outline">Add Doc</button>
+      </div>
+    </div>
+
+    <div class="page-panel" id="panel-ref-cloud" data-panel="ref-cloud">
+      <p class="ref-note">UI-ref · ui-4 — Cloud Agents (empty state)</p>
+      <div class="page-title">Cloud Agents</div>
+      <p class="page-subtitle">Cloud Agents Unavailable<br>Cloud Agents require data storage to function.</p>
+      <div class="hero-state" style="margin-top:28px;">
+        <div class="hero-state-title">Privacy Mode Enabled</div>
+        <div class="hero-state-desc">Cloud Agents are not available when your privacy mode is set to disable data storage. To use Cloud Agents, please update your privacy settings to allow data storage.</div>
+        <button type="button" class="btn-outline">Open Privacy Settings</button>
+      </div>
+    </div>
+
+    <div class="page-panel" id="panel-ref-autorun" data-panel="ref-autorun">
+      <p class="ref-note">UI-ref · ui-5 — Auto-run</p>
+      <div class="page-title">Auto-Run</div>
+      <div class="settings-group">
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name setting-name-strong">Auto-Run Mode</div>
+            <div class="setting-desc">Choose how the Agent runs tools and terminal commands</div>
+          </div>
+          <div class="select-wrap select-wrap-chev">Auto-Run in Sandbox<span class="chev-double"><span>▲</span><span>▼</span></span></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name setting-name-strong">Auto-Run Network Access</div>
+            <div class="setting-desc">Control network requests from sandbox and agent</div>
+          </div>
+          <div class="select-wrap select-wrap-chev">sandbox.json + Defaults<span class="chev-double"><span>▲</span><span>▼</span></span></div>
+        </div>
+        <div class="setting-row row-stack">
+          <div class="setting-info">
+            <div class="setting-name setting-name-strong">Command Allowlist</div>
+            <div class="setting-desc">Commands always allowed without confirmation</div>
+          </div>
+          <input class="input-dark input-wide" type="text" placeholder="e.g., ls, pwd" readonly>
+        </div>
+        <div class="setting-row row-stack">
+          <div class="setting-info">
+            <div class="setting-name setting-name-strong">Fetch Domain Allowlist</div>
+            <div class="setting-desc">Domains the agent may request without confirmation</div>
+          </div>
+          <input class="input-dark input-wide" type="text" placeholder="e.g., docs.github.com, *" readonly>
+        </div>
+        <div class="setting-row row-stack">
+          <div class="setting-info">
+            <div class="setting-name setting-name-strong">MCP Allowlist</div>
+            <div class="setting-desc">Format: server:tool (e.g. pencil:get_editor_state)</div>
+          </div>
+          <div class="tag-box">
+            <span class="tag-chip-rem">pencil:get_editor_state <span class="x">×</span></span>
+            <span class="tag-chip-rem">pencil:batch_get <span class="x">×</span></span>
+          </div>
+        </div>
+        <div class="setting-row row-stack">
+          <div class="setting-info">
+            <div class="setting-name setting-name-strong">Auto-Approved Mode Transitions</div>
+            <div class="setting-desc">Mode changes that skip confirmation</div>
+          </div>
+          <input class="input-dark input-wide" type="text" placeholder="e.g., agent->plan" readonly>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name setting-name-strong">Browser Protection</div>
+            <div class="setting-desc">Prevent automatic browser tool usage</div>
+          </div>
+          <div class="toggle off" role="switch" aria-checked="false" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name setting-name-strong">MCP Tools Protection</div>
+            <div class="setting-desc">Prevent automatic MCP tool calls</div>
+          </div>
+          <div class="toggle off" role="switch" aria-checked="false" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name setting-name-strong">File-Deletion Protection</div>
+            <div class="setting-desc">Prevent automatic deletion of files</div>
+          </div>
+          <div class="toggle off" role="switch" aria-checked="false" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-panel" id="panel-ref-agents2" data-panel="ref-agents2">
+      <p class="ref-note">UI-ref · ui-6 — Agents</p>
+      <div class="page-title">Agents</div>
+      <div class="settings-group">
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name setting-name-strong">Text Size</div>
+            <div class="setting-desc">Adjust chat and UI text size</div>
+          </div>
+          <div class="select-wrap select-wrap-chev">Default<span class="chev-double"><span>▲</span><span>▼</span></span></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name setting-name-strong">Auto-Clear Chat</div>
+            <div class="setting-desc">Clear input after sending a message</div>
+          </div>
+          <div class="toggle on" role="switch" aria-checked="true" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name setting-name-strong">Submit shortcut inside Agent input</div>
+            <div class="setting-desc">⌘↵ submits when focus is in the input</div>
+          </div>
+          <div class="toggle off" role="switch" aria-checked="false" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name setting-name-strong">Max Tab Count</div>
+            <div class="setting-desc">Maximum number of tabs in agent context</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <input class="num-input" type="text" value="5" readonly>
+            <div class="select-wrap select-wrap-chev" style="padding:5px 8px;"><span class="chev-double"><span>▲</span><span>▼</span></span></div>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name setting-name-strong">Queue Messages</div>
+            <div class="setting-desc">While Agent is working, queue additional messages</div>
+          </div>
+          <div class="select-wrap select-wrap-chev">On<span class="chev-double"><span>▲</span><span>▼</span></span></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name setting-name-strong">Usage Summary</div>
+            <div class="setting-desc">Show usage summary after agent responses</div>
+          </div>
+          <div class="select-wrap select-wrap-chev">Off<span class="chev-double"><span>▲</span><span>▼</span></span></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name setting-name-strong">Agent Autocomplete</div>
+            <div class="setting-desc">Suggest completions while typing in agent chat</div>
+          </div>
+          <div class="toggle on" role="switch" aria-checked="true" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+      </div>
+      <div class="subsection-out">Agent Review</div>
+      <div class="settings-group">
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name setting-name-strong">Start reviews on commit</div>
+            <div class="setting-desc">Open review flow after committing changes</div>
+          </div>
+          <div class="toggle on" role="switch" aria-checked="true" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name setting-name-strong">Include submodules</div>
+            <div class="setting-desc">Include git submodules in review scope</div>
+          </div>
+          <div class="toggle off" role="switch" aria-checked="false" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name setting-name-strong">Include untracked files</div>
+            <div class="setting-desc">Show untracked files in diff reviews</div>
+          </div>
+          <div class="toggle on" role="switch" aria-checked="true" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name setting-name-strong">Default Approach</div>
+            <div class="setting-desc">Preferred review depth</div>
+          </div>
+          <div class="select-wrap select-wrap-chev">Balanced<span class="chev-double"><span>▲</span><span>▼</span></span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-panel" id="panel-ref-voice" data-panel="ref-voice">
+      <p class="ref-note">UI-ref · ui-7 — Voice, Attribution, Git</p>
+      <div class="page-title">Agents</div>
+      <p class="page-subtitle" style="margin-top:-12px;">Voice, attribution, and git settings (excerpt).</p>
+      <div class="section-label">Voice Mode</div>
+      <div class="settings-group">
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name setting-name-strong">Submit Keywords</div>
+            <div class="setting-desc">Custom keywords trigger auto-submit in voice mode</div>
+          </div>
+          <div class="tag-box" style="min-height:40px;width:auto;min-width:140px;">
+            <span class="tag-chip-rem">submit <span class="x">×</span></span>
+          </div>
+        </div>
+      </div>
+      <div class="section-label">Attribution</div>
+      <div class="settings-group">
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name setting-name-strong">Commit Attribution</div>
+            <div class="setting-desc">Mark Agent commits as &quot;Made with Cursor&quot;</div>
+          </div>
+          <div class="toggle on" role="switch" aria-checked="true" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name setting-name-strong">PR Attribution</div>
+            <div class="setting-desc">Mark pull requests as made with Cursor</div>
+          </div>
+          <div class="toggle on" role="switch" aria-checked="true" tabindex="0" onclick="this.classList.toggle('on');this.classList.toggle('off');this.setAttribute('aria-checked', this.classList.contains('on'))"></div>
+        </div>
+      </div>
+      <div class="section-label">Git</div>
+      <div class="settings-group">
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name setting-name-strong">Branch Prefix</div>
+            <div class="setting-desc">Prefix for new branches created by the Agent</div>
+          </div>
+          <input class="input-dark" type="text" value="cursor/" readonly>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-panel" id="panel-ref-prompts" data-panel="ref-prompts">
+      <p class="ref-note">UI-ref · ui-8 — Prompt library grid</p>
+      <div class="prompt-library-head">120 prompts</div>
+      <div class="prompt-grid">
+        <div class="prompt-card">
+          <div class="prompt-card-top">
+            <span class="cat-badge career">Career</span>
+            <button type="button" class="copy-ic-btn" aria-label="Copy"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M3 11V3h8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></button>
+          </div>
+          <div class="prompt-card-h">Brag Document / Work Log</div>
+          <p class="prompt-card-p">Create a structured record of your accomplishments, impact, and growth for performance reviews and promotions.</p>
+          <div class="prompt-card-tags">
+            <span class="prompt-mini-tag">performance-review</span>
+            <span class="prompt-mini-tag">promotion</span>
+            <span class="prompt-mini-tag">career-development</span>
+            <span class="prompt-more">+2</span>
+          </div>
+        </div>
+        <div class="prompt-card">
+          <div class="prompt-card-top">
+            <span class="cat-badge research">Research</span>
+            <button type="button" class="copy-ic-btn" aria-label="Copy"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M3 11V3h8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></button>
+          </div>
+          <div class="prompt-card-h">Literature Review Matrix</div>
+          <p class="prompt-card-p">Summarize papers, compare methods, and surface gaps for your thesis or product spec.</p>
+          <div class="prompt-card-tags">
+            <span class="prompt-mini-tag">academic</span>
+            <span class="prompt-mini-tag">synthesis</span>
+            <span class="prompt-more">+1</span>
+          </div>
+        </div>
+        <div class="prompt-card">
+          <div class="prompt-card-top">
+            <span class="cat-badge design">Design</span>
+            <button type="button" class="copy-ic-btn" aria-label="Copy"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M3 11V3h8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></button>
+          </div>
+          <div class="prompt-card-h">Accessibility Audit Checklist</div>
+          <p class="prompt-card-p">Walk through WCAG-oriented checks for color, focus, semantics, and motion in your UI.</p>
+          <div class="prompt-card-tags">
+            <span class="prompt-mini-tag">accessibility</span>
+            <span class="prompt-mini-tag">wcag</span>
+            <span class="prompt-more">+3</span>
+          </div>
+        </div>
+        <div class="prompt-card">
+          <div class="prompt-card-top">
+            <span class="cat-badge product">Product</span>
+            <button type="button" class="copy-ic-btn" aria-label="Copy"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M3 11V3h8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></button>
+          </div>
+          <div class="prompt-card-h">PRD One-Pager</div>
+          <p class="prompt-card-p">Draft problem, goals, non-goals, metrics, and rollout risks in a single tight page.</p>
+          <div class="prompt-card-tags">
+            <span class="prompt-mini-tag">prd</span>
+            <span class="prompt-mini-tag">discovery</span>
+            <span class="prompt-more">+2</span>
+          </div>
+        </div>
+        <div class="prompt-card">
+          <div class="prompt-card-top">
+            <span class="cat-badge design">Design</span>
+            <button type="button" class="copy-ic-btn" aria-label="Copy"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M3 11V3h8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></button>
+          </div>
+          <div class="prompt-card-h">Design System Diff</div>
+          <p class="prompt-card-p">Compare two component APIs and list breaking vs safe changes for consumers.</p>
+          <div class="prompt-card-tags">
+            <span class="prompt-mini-tag">design-system</span>
+            <span class="prompt-mini-tag">migration</span>
+          </div>
+        </div>
+        <div class="prompt-card">
+          <div class="prompt-card-top">
+            <span class="cat-badge product">Product</span>
+            <button type="button" class="copy-ic-btn" aria-label="Copy"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M3 11V3h8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></button>
+          </div>
+          <div class="prompt-card-h">Stakeholder Mapping Template</div>
+          <p class="prompt-card-p">Map stakeholders, their interests, and engagement strategies for cross-functional programs.</p>
+          <div class="prompt-card-tags">
+            <span class="prompt-mini-tag">stakeholder-management</span>
+            <span class="prompt-mini-tag">cross-functional</span>
+            <span class="prompt-mini-tag">project-management</span>
+            <span class="prompt-more">+2</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function () {
+  var navItems = document.querySelectorAll('.nav-item[data-nav]');
+  var panels = document.querySelectorAll('.page-panel[data-panel]');
+
+  function showPage(id) {
+    navItems.forEach(function (el) {
+      el.classList.toggle('active', el.getAttribute('data-nav') === id);
+    });
+    panels.forEach(function (p) {
+      p.classList.toggle('active', p.getAttribute('data-panel') === id);
+    });
+    if (history.replaceState) {
+      var url = location.pathname + location.search;
+      if (id !== 'foundation') url += '#' + id;
+      history.replaceState(null, '', url);
+    }
+    var main = document.querySelector('.main');
+    if (main) main.scrollTop = 0;
+  }
+
+  navItems.forEach(function (item) {
+    item.addEventListener('click', function () {
+      showPage(item.getAttribute('data-nav'));
+    });
+    item.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        showPage(item.getAttribute('data-nav'));
+      }
+    });
+  });
+
+  function syncFromHash() {
+    var h = (location.hash || '').replace(/^#/, '');
+    var valid = ['foundation', 'general', 'plan', 'agents', 'tab', 'models', 'cloud', 'plugins', 'rules', 'tools', 'hooks', 'indexing', 'network', 'beta', 'marketplace', 'docs', 'repopilot', 'ref-rules', 'ref-tools', 'ref-index', 'ref-cloud', 'ref-autorun', 'ref-agents2', 'ref-voice', 'ref-prompts'];
+    if (valid.indexOf(h) !== -1) showPage(h);
+    else showPage('foundation');
+  }
+
+  window.addEventListener('hashchange', syncFromHash);
+  syncFromHash();
+})();
+</script>
+</body>
+</html>
