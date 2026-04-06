@@ -28,7 +28,7 @@ export default function SettingsPage() {
   const [autostart, setAutostart] = React.useState(false)
 
   return (
-    <ShellPage maxWidth="narrow" className="space-y-8">
+    <ShellPage maxWidth="standard" className="space-y-8">
       <section>
         <h2 className="mb-3 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
           General

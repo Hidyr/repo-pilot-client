@@ -7,7 +7,7 @@ export default function QueuePage() {
   const q = DUMMY_QUEUE
 
   return (
-    <ShellPage maxWidth="comfortable">
+    <ShellPage maxWidth="standard">
       <p className="mb-6 text-[13px] text-muted-foreground">
         Live queue mirrors the bar at the bottom (static demo). In production this
         polls <code className="font-mono text-[11px] text-muted-foreground">GET /api/queue</code>.
