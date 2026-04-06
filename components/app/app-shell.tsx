@@ -99,9 +99,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const badge = queueBadgeCount(q)
 
   return (
-    <div className="flex min-h-svh flex-col bg-transparent">
-      <div className="flex min-h-0 flex-1">
-        <aside className="flex w-[220px] shrink-0 flex-col border-r border-border bg-sidebar py-3">
+    <div className="flex h-svh max-h-svh min-h-0 flex-col overflow-hidden bg-transparent">
+      <div className="flex min-h-0 flex-1 overflow-hidden">
+        <aside className="flex w-[220px] shrink-0 flex-col overflow-y-auto border-r border-border bg-sidebar py-3">
           <div className="mb-4 flex items-center gap-2 px-4">
             <Rocket className="size-4 text-muted-foreground" strokeWidth={1.5} />
             <span className="text-[13px] font-medium text-sidebar-foreground">
@@ -123,9 +123,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </NavLink>
           </nav>
         </aside>
-        <div className="flex min-w-0 flex-1 flex-col">
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
           <AppHeader />
-          <main className="flex-1 overflow-auto p-6">{children}</main>
+          <main className="min-h-0 flex-1 overflow-auto overscroll-contain p-6">
+            {children}
+          </main>
         </div>
       </div>
       <QueueStatusBar />
