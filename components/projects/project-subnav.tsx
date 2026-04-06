@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils"
 const tabs = (projectId: string) =>
   [
     { href: `/projects/${projectId}`, label: "Overview" },
+    { href: `/projects/${projectId}/automation`, label: "Automation" },
     { href: `/projects/${projectId}/board`, label: "Board" },
     { href: `/projects/${projectId}/runs`, label: "Run history" },
   ] as const

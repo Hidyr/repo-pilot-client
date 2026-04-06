@@ -4,7 +4,6 @@ import * as React from "react"
 
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { ScheduleConfigPanel } from "@/components/projects/schedule-config-panel"
 import type { Project } from "@/lib/dummy-data"
 
 export function ProjectOverview({ project }: { project: Project }) {
@@ -12,7 +11,7 @@ export function ProjectOverview({ project }: { project: Project }) {
   const [description, setDescription] = React.useState(project.description)
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-8">
+    <div className="mx-auto flex max-w-6xl flex-col gap-8">
       <section className="space-y-4">
         <div className="space-y-1.5">
           <Label htmlFor="p-name">Name</Label>
@@ -65,10 +64,6 @@ export function ProjectOverview({ project }: { project: Project }) {
         <pre className="max-h-[320px] overflow-auto rounded-lg border border-border bg-muted/20 p-4 font-mono text-[11px] leading-relaxed whitespace-pre-wrap text-muted-foreground">
           {project.readmeExcerpt}
         </pre>
-      </section>
-
-      <section>
-        <ScheduleConfigPanel project={project} />
       </section>
     </div>
   )

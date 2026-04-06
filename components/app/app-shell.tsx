@@ -29,6 +29,7 @@ function AppHeader() {
     if (projectId) {
       const p = getProject(projectId)
       const name = p?.name ?? "Project"
+      if (pathname.endsWith("/automation")) return `${name} · Automation`
       if (pathname.endsWith("/board")) return `${name} · Board`
       if (pathname.endsWith("/runs")) return `${name} · Run history`
       return `${name} · Overview`
