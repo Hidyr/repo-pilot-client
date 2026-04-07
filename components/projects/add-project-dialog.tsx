@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { apiBase } from "@/lib/api/env"
+import { pickFolder } from "@/lib/os/pick-folder"
 
 export function AddProjectDialog() {
   const [open, setOpen] = React.useState(false)
@@ -52,30 +53,40 @@ export function AddProjectDialog() {
             </TabsTrigger>
           </TabsList>
           <TabsContent value="local" className="flex flex-col gap-3">
-            <div className="flex flex-wrap gap-2">
-              <Button type="button" variant="outline" size="sm" disabled>
-                Browse folder
-              </Button>
-              <span className="self-center text-[11px] text-muted-foreground">
-                or paste path
-              </span>
-            </div>
             <div className="space-y-1.5">
               <Label htmlFor="local-path">Path</Label>
-              <Input
-                id="local-path"
-                placeholder="/Users/you/project"
-                className="font-mono text-xs"
-                value={localPath}
-                onChange={(e) => {
-                  const v = e.target.value
-                  setLocalPath(v)
-                  if (!localName.trim()) {
-                    const parts = v.replace(/\/+$/, "").split("/")
-                    setLocalName(parts[parts.length - 1] ?? "")
-                  }
-                }}
-              />
+              <div className="flex gap-2">
+                <Input
+                  id="local-path"
+                  placeholder="/Users/you/project"
+                  className="font-mono text-xs"
+                  value={localPath}
+                  onChange={(e) => {
+                    const v = e.target.value
+                    setLocalPath(v)
+                    if (!localName.trim()) {
+                      const parts = v.replace(/\/+$/, "").split("/")
+                      setLocalName(parts[parts.length - 1] ?? "")
+                    }
+                  }}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    void (async () => {
+                      const selected = await pickFolder()
+                      if (!selected) return
+                      setLocalPath(selected)
+                      const parts = selected.replace(/\/+$/, "").split("/")
+                      setLocalName(parts[parts.length - 1] ?? "")
+                    })()
+                  }}
+                >
+                  Browse
+                </Button>
+              </div>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="local-name">Name</Label>
@@ -107,13 +118,32 @@ export function AddProjectDialog() {
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="git-clone-path">Local clone path</Label>
-              <Input
-                id="git-clone-path"
-                placeholder="/Users/you/projects/repo"
-                className="font-mono text-xs"
-                value={clonePath}
-                onChange={(e) => setClonePath(e.target.value)}
-              />
+              <div className="flex gap-2">
+                <Input
+                  id="git-clone-path"
+                  placeholder="(optional) Defaults to ~/projects/<repo>"
+                  className="font-mono text-xs"
+                  value={clonePath}
+                  onChange={(e) => setClonePath(e.target.value)}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    void (async () => {
+                      const selected = await pickFolder()
+                      if (!selected) return
+                      setClonePath(selected)
+                    })()
+                  }}
+                >
+                  Browse
+                </Button>
+              </div>
+              <p className="text-[11px] text-muted-foreground">
+                If you leave this blank, RepoPilot will clone into your configured default clone folder (Settings).
+              </p>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="git-name">Name</Label>
@@ -149,7 +179,7 @@ export function AddProjectDialog() {
                       ? {
                           type: "git" as const,
                           gitUrl,
-                          clonePath,
+                          ...(clonePath.trim() ? { clonePath: clonePath.trim() } : {}),
                           name: gitName || undefined,
                         }
                       : {

@@ -14,8 +14,10 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { ShellPage } from "@/components/app/shell-page"
 import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
 import { apiBase } from "@/lib/api/env"
 import { useAppQueue } from "@/contexts/queue-refresh-context"
+import { pickFolder } from "@/lib/os/pick-folder"
 
 async function putSettings(
   body: Record<string, unknown>
@@ -37,6 +39,7 @@ type SettingsPayload = {
   max_concurrent_runs?: string
   max_concurrent_runs_editable?: string
   max_concurrent_runs_lock_reason?: string
+  git_clone_base_dir?: string
 }
 
 export default function SettingsPage() {
@@ -55,6 +58,7 @@ export default function SettingsPage() {
   const [autostart, setAutostart] = React.useState(false)
   const [maxRunsEditable, setMaxRunsEditable] = React.useState(true)
   const [maxRunsLockReason, setMaxRunsLockReason] = React.useState("")
+  const [gitCloneBaseDir, setGitCloneBaseDir] = React.useState("")
 
   const loadSettings = React.useCallback(() => {
     const b = apiBase()
@@ -69,6 +73,7 @@ export default function SettingsPage() {
         setAutostart(d.autostart === "true")
         setMaxRunsEditable(d.max_concurrent_runs_editable !== "false")
         setMaxRunsLockReason(d.max_concurrent_runs_lock_reason ?? "")
+        if (typeof d.git_clone_base_dir === "string") setGitCloneBaseDir(d.git_clone_base_dir)
       })
       .catch(() => {})
   }, [])
@@ -159,6 +164,47 @@ export default function SettingsPage() {
                 </ToggleGroupItem>
               ))}
             </ToggleGroup>
+          </SettingsRow>
+
+          <SettingsRow className="items-start">
+            <div className="min-w-0 flex-1">
+              <Label className="text-[13px] text-foreground">Default Git clone folder</Label>
+              <p className="mt-0.5 text-[11px] text-muted-foreground">
+                Used when adding a Git repository without a clone path. Leave blank to use{" "}
+                <span className="font-mono">~/projects</span>.
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <Input
+                value={gitCloneBaseDir}
+                onChange={(e) => setGitCloneBaseDir(e.target.value)}
+                onBlur={() => {
+                  const v = gitCloneBaseDir
+                  void (async () => {
+                    const { ok } = await putSettings({ git_clone_base_dir: v })
+                    if (!ok) toast.error("Could not update default clone folder")
+                  })()
+                }}
+                placeholder="e.g. /Users/you/dev"
+                className="h-8 w-[320px] font-mono text-xs"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  void (async () => {
+                    const selected = await pickFolder()
+                    if (!selected) return
+                    setGitCloneBaseDir(selected)
+                    const { ok } = await putSettings({ git_clone_base_dir: selected })
+                    if (!ok) toast.error("Could not update default clone folder")
+                  })()
+                }}
+              >
+                Browse
+              </Button>
+            </div>
           </SettingsRow>
         </SettingsGroup>
       </section>
