@@ -14,9 +14,15 @@ export async function pickFolder(): Promise<string | null> {
     })
     if (!selected) return null
     return Array.isArray(selected) ? (selected[0] ?? null) : selected
-  } catch {
-    toast.message("Folder picker is desktop-only", {
-      description: "This requires the Tauri desktop shell.",
+  } catch (e) {
+    const msg =
+      e instanceof Error ? e.message : typeof e === "string" ? e : "Unknown error"
+    console.error("[pickFolder]", e)
+    toast.message("Could not open folder picker", {
+      description:
+        msg.includes("invoke") || msg.includes("not allowed")
+          ? "Tauri IPC may be blocked — use `bun run desktop:dev` and ensure the app URL matches devUrl (127.0.0.1:3000)."
+          : msg,
     })
     return null
   }
