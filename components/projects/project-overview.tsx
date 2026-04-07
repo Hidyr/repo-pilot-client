@@ -2,17 +2,35 @@
 
 import * as React from "react"
 import ReactMarkdown from "react-markdown"
+import { useRouter } from "next/navigation"
 
+import { Button } from "@/components/ui/button"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import type { Project } from "@/lib/api/types"
 import { apiBase } from "@/lib/api/env"
 import { toast } from "sonner"
+import { deleteProject } from "@/lib/api/project-client"
+import { useQueueRefresh } from "@/contexts/queue-refresh-context"
 
 export function ProjectOverview({ project }: { project: Project }) {
+  const router = useRouter()
+  const refreshQueue = useQueueRefresh()
   const [name, setName] = React.useState(project.name)
   const [description, setDescription] = React.useState(project.description ?? "")
   const [readme, setReadme] = React.useState<{ exists: boolean; markdown: string } | null>(null)
+  const [deleting, setDeleting] = React.useState(false)
 
   const save = React.useCallback(
     async (patch: { name?: string; description?: string }) => {
@@ -111,6 +129,55 @@ export function ProjectOverview({ project }: { project: Project }) {
             <ReactMarkdown>{readme.markdown}</ReactMarkdown>
           </div>
         )}
+      </section>
+
+      <section className="rounded-lg border border-destructive/30 bg-destructive/5 p-4">
+        <h2 className="mb-1 text-[13px] font-medium text-destructive">Remove project</h2>
+        <p className="mb-3 text-[12px] text-muted-foreground">
+          Removes this project from RepoPilot. Your files on disk are not deleted.
+        </p>
+        <AlertDialog>
+          <AlertDialogTrigger render={<Button variant="destructive" size="sm" disabled={deleting} />}>
+            Delete project…
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete “{project.name}”?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This cannot be undone. Features, runs, and queue jobs for this project will be
+                removed from RepoPilot. The folder at{" "}
+                <span className="font-mono text-xs">{project.localPath}</span> stays on your
+                machine.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                onClick={() => {
+                  void (async () => {
+                    setDeleting(true)
+                    try {
+                      const result = await deleteProject(project.id)
+                      if (!result.ok) {
+                        toast.error("Could not delete project", { description: result.message })
+                        return
+                      }
+                      toast.success("Project removed")
+                      await refreshQueue?.()
+                      router.push("/projects")
+                      router.refresh()
+                    } finally {
+                      setDeleting(false)
+                    }
+                  })()
+                }}
+              >
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </section>
     </div>
   )
