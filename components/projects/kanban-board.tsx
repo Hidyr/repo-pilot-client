@@ -49,24 +49,24 @@ async function persistBoardState(
   prev: Record<string, Feature>,
   nextMap: Record<string, Feature>,
   cols: Record<ColumnId, string[]>,
-  refreshQueue: (() => Promise<void>) | null
+  refreshQueue: (() => Promise<void>) | null,
+  applyServerFeatures?: (list: Feature[]) => void
 ) {
   if (!projectId || !apiBase()) return
-  const tasks: Promise<unknown>[] = []
+  const serverPatches: Feature[] = []
   for (const id of Object.keys(nextMap)) {
     if (prev[id]?.status !== nextMap[id]?.status) {
-      tasks.push(putFeature(id, { status: nextMap[id]!.status }))
+      const updated = await putFeature(id, { status: nextMap[id]!.status })
+      if (updated) serverPatches.push(updated)
     }
   }
   const orderedIds = [...cols.pending, ...cols.active, ...cols.done]
-  tasks.push(postFeaturesReorder(projectId, orderedIds))
   try {
-    await Promise.all(tasks)
+    await postFeaturesReorder(projectId, orderedIds)
   } catch {
-    /* individual requests may fail; queue poll will reconcile */
+    /* reorder may fail; board stream will reconcile */
   }
-  // Queue is live via WebSocket; HTTP refresh is only needed when explicitly requested elsewhere.
-  // Keep this hook optional/no-op to avoid redundant GETs.
+  if (serverPatches.length) applyServerFeatures?.(serverPatches)
   await refreshQueue?.()
 }
 
@@ -76,9 +76,11 @@ type ColumnId = (typeof COLUMN_IDS)[number]
 function columnsFromFeatures(features: Feature[]): Record<ColumnId, string[]> {
   return {
     pending: features
-      .filter((f) => ["pending", "queued", "failed"].includes(f.status))
+      .filter((f) => ["pending", "failed"].includes(f.status))
       .map((f) => f.id),
-    active: features.filter((f) => f.status === "in_progress").map((f) => f.id),
+    active: features
+      .filter((f) => f.status === "in_progress" || f.status === "queued")
+      .map((f) => f.id),
     done: features.filter((f) => f.status === "done").map((f) => f.id),
   }
 }
@@ -107,14 +109,18 @@ function mergeStatusFromColumns(
   const next: Record<string, Feature> = { ...prev }
   for (const id of cols.pending) {
     const f = next[id]
-    if (!f || f.status === "queued") continue
+    if (!f) continue
     if (f.status === "failed") next[id] = { ...f, status: "failed" as FeatureStatus }
     else next[id] = { ...f, status: "pending" as FeatureStatus }
   }
   for (const id of cols.active) {
     const f = next[id]
     if (!f) continue
-    next[id] = { ...f, status: "in_progress" as FeatureStatus }
+    if (f.status === "queued") {
+      next[id] = { ...f, status: "queued" as FeatureStatus }
+    } else {
+      next[id] = { ...f, status: "in_progress" as FeatureStatus }
+    }
   }
   for (const id of cols.done) {
     const f = next[id]
@@ -417,7 +423,13 @@ export function KanbanBoard({
     setFeaturesById(nextMap)
 
     // Persist once per completed drop.
-    void persistBoardState(projectId, prevMap, nextMap, next, refreshQueue)
+    void persistBoardState(projectId, prevMap, nextMap, next, refreshQueue, (patches) => {
+      setFeaturesById((cur) => {
+        const merged = { ...cur }
+        for (const f of patches) merged[f.id] = f
+        return merged
+      })
+    })
   }
 
   const activeFeature = activeId ? featuresById[activeId] : null
