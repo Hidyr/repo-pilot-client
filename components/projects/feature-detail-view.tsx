@@ -10,7 +10,7 @@ import { StatusBadge } from "@/components/ui/status-badge"
 import { apiBase } from "@/lib/api/env"
 import { putFeature } from "@/lib/api/feature-client"
 import { cn } from "@/lib/utils"
-import type { FeatureCard, RunRow } from "@/lib/dummy-data"
+import type { Feature, Run } from "@/lib/api/types"
 
 function LogLine({ line }: { line: string }) {
   const m = line.match(/^(\[[^\]]+\])(.*)$/)
@@ -25,7 +25,7 @@ function LogLine({ line }: { line: string }) {
   )
 }
 
-async function fetchRunsForFeature(projectId: string, featureId: string): Promise<RunRow[]> {
+async function fetchRunsForFeature(projectId: string, featureId: string): Promise<Run[]> {
   const b = apiBase()
   if (!b) return []
   const r = await fetch(
@@ -33,7 +33,7 @@ async function fetchRunsForFeature(projectId: string, featureId: string): Promis
     { cache: "no-store" }
   )
   if (!r.ok) return []
-  const j = (await r.json()) as { data?: RunRow[] }
+  const j = (await r.json()) as { data?: Run[] }
   return j.data ?? []
 }
 
@@ -41,11 +41,11 @@ export function FeatureDetailView({
   feature: initialFeature,
   initialRuns,
 }: {
-  feature: FeatureCard
-  initialRuns: RunRow[]
+  feature: Feature
+  initialRuns: Run[]
 }) {
   const [feature, setFeature] = React.useState(initialFeature)
-  const [runs, setRuns] = React.useState<RunRow[]>(initialRuns)
+  const [runs, setRuns] = React.useState<Run[]>(initialRuns)
   const [userPromptDraft, setUserPromptDraft] = React.useState(feature.userPrompt ?? "")
   const saveTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -59,7 +59,11 @@ export function FeatureDetailView({
   }, [initialRuns])
 
   const latest = runs[0]
-  const logLines = latest?.logLines ?? []
+  const logLines =
+    (latest?.logs ?? "")
+      .split("\n")
+      .map((x) => x.trimEnd())
+      .filter(Boolean) ?? []
   const showLivePoll =
     feature.status === "in_progress" ||
     feature.status === "queued" ||
@@ -93,12 +97,16 @@ export function FeatureDetailView({
     <div className="space-y-8 pb-12">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0 space-y-2">
-          <Button variant="ghost" size="sm" className="-ml-2 gap-1.5 text-muted-foreground" asChild>
-            <Link href={boardHref} className="flex items-center">
+          <Link href={boardHref} className="inline-flex">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="-ml-2 gap-1.5 text-muted-foreground"
+            >
               <ArrowLeft className="size-3.5" />
               Board
-            </Link>
-          </Button>
+            </Button>
+          </Link>
           <div className="flex flex-wrap items-center gap-2">
             <h1 className="text-xl font-semibold tracking-tight text-foreground">{feature.title}</h1>
             <StatusBadge status={feature.status} className="text-[10px]" />

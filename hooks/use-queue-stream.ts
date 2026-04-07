@@ -5,7 +5,7 @@ import * as React from "react"
 import { apiBase } from "@/lib/api/env"
 import { mapQueueApiToSnapshot } from "@/lib/api/queue-mapper"
 import { queueWebSocketUrl } from "@/lib/api/queue-ws-url"
-import { DUMMY_QUEUE, type QueueSnapshot } from "@/lib/dummy-data"
+import type { QueueSnapshot } from "@/lib/api/types"
 
 const RECONNECT_MS = 2000
 
@@ -13,12 +13,16 @@ export function useQueueStream(): {
   queue: QueueSnapshot
   refresh: () => Promise<void>
 } {
-  const [queue, setQueue] = React.useState<QueueSnapshot>(DUMMY_QUEUE)
+  const [queue, setQueue] = React.useState<QueueSnapshot>({
+    maxSlots: 4,
+    activeSlots: 0,
+    waitingCount: 0,
+    jobs: [],
+  })
 
   const refresh = React.useCallback(async () => {
     const b = apiBase()
     if (!b) {
-      setQueue(DUMMY_QUEUE)
       return
     }
     try {
@@ -34,7 +38,6 @@ export function useQueueStream(): {
   React.useEffect(() => {
     const wsUrl = queueWebSocketUrl()
     if (!wsUrl) {
-      setQueue(DUMMY_QUEUE)
       return
     }
 

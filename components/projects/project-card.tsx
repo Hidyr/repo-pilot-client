@@ -6,7 +6,8 @@ import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
-import type { Project } from "@/lib/dummy-data"
+import type { Project } from "@/lib/api/types"
+import { apiBase } from "@/lib/api/env"
 
 function formatRelative(iso: string | null) {
   if (!iso) return "—"
@@ -26,6 +27,7 @@ export function ProjectCard({
   project: Project
   layout?: "list" | "grid"
 }) {
+  const lastRunAt = project.lastRun?.startedAt ?? null
   const actions = (
     <>
       <Button
@@ -40,11 +42,44 @@ export function ProjectCard({
         size="sm"
         variant="outline"
         className={cn(layout === "grid" && "flex-1")}
-        onClick={() =>
-          toast.success("Queued", {
-            description: "Job enqueued — position #3 in queue (demo)",
-          })
-        }
+        onClick={() => {
+          void (async () => {
+            const b = apiBase()
+            if (!b) {
+              toast.error("Backend not configured", {
+                description: "Set NEXT_PUBLIC_API_BASE to your server URL.",
+              })
+              return
+            }
+            try {
+              const r = await fetch(`${b}/runs/trigger`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ projectId: project.id }),
+              })
+              const j = (await r.json().catch(() => null)) as
+                | { data?: { position?: number }; error?: { code?: string; message?: string } }
+                | null
+              if (!r.ok) {
+                toast.error("Could not enqueue run", {
+                  description: j?.error?.message ?? r.statusText,
+                })
+                return
+              }
+              if (j?.error?.code === "NO_FEATURES") {
+                toast.message("No pending features", {
+                  description: "Run skipped — add a pending feature first.",
+                })
+                return
+              }
+              toast.success("Job enqueued", {
+                description: `Position #${j?.data?.position ?? "?"} in queue`,
+              })
+            } catch {
+              toast.error("Could not enqueue run", { description: "Network error" })
+            }
+          })()
+        }}
       >
         Run now
       </Button>
@@ -86,8 +121,8 @@ export function ProjectCard({
                 </span>
                 <span>
                   Branch:{" "}
-                  {project.isGitRepo && project.branch ? (
-                    <span className="text-foreground/80">{project.branch}</span>
+                  {project.isGitRepo && project.defaultBranch ? (
+                    <span className="text-foreground/80">{project.defaultBranch}</span>
                   ) : (
                     "—"
                   )}
@@ -98,7 +133,7 @@ export function ProjectCard({
               ) : null}
               <p className="mt-2 text-[11px] text-muted-foreground">
                 Pending {project.pendingCount} · Done {project.doneCount} · Last run{" "}
-                {formatRelative(project.lastRunAt)}
+                {formatRelative(lastRunAt)}
               </p>
             </div>
             <div className="flex shrink-0 flex-col gap-2">{actions}</div>
@@ -136,10 +171,10 @@ export function ProjectCard({
             <p className="mt-2 text-[10px] text-muted-foreground">
               {!project.isGitRepo
                 ? "Local only"
-                : `${project.branch ?? "—"} · Pending ${project.pendingCount}`}
+                : `${project.defaultBranch ?? "—"} · Pending ${project.pendingCount}`}
             </p>
             <p className="mt-1 text-[10px] text-muted-foreground">
-              Last run {formatRelative(project.lastRunAt)}
+              Last run {formatRelative(lastRunAt)}
             </p>
             <div className="mt-auto flex gap-2 pt-4">{actions}</div>
           </>

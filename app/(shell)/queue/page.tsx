@@ -9,8 +9,7 @@ export default async function QueuePage() {
   return (
     <ShellPage maxWidth="standard">
       <p className="mb-6 text-[13px] text-muted-foreground">
-        Live queue mirrors the bar at the bottom (static demo). In production the shell uses a
-        WebSocket to{" "}
+        Live queue mirrors the bar at the bottom. The app shell uses a WebSocket to{" "}
         <code className="font-mono text-[11px] text-muted-foreground">/api/queue/ws</code>
         ; <code className="font-mono text-[11px] text-muted-foreground">GET /api/queue</code> is
         for snapshots and manual refresh.
@@ -25,7 +24,7 @@ export default async function QueuePage() {
               key={job.id}
               className="flex items-center gap-3 px-4 py-3 text-[13px]"
             >
-              {job.state === "active" ? (
+              {job.status === "active" ? (
                 <span className="size-2 shrink-0 rounded-full bg-muted-foreground/80" />
               ) : (
                 <Clock className="size-4 shrink-0 text-muted-foreground" />
@@ -36,7 +35,7 @@ export default async function QueuePage() {
                 <span>{job.featureTitle}</span>
               </span>
               <span className="shrink-0 text-[11px] uppercase text-muted-foreground">
-                {job.state}
+                {job.status}
               </span>
             </li>
           ))}

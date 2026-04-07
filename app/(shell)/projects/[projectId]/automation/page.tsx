@@ -14,7 +14,7 @@ export default async function ProjectAutomationPage({
   return (
     <>
       <p className="mb-4 text-[13px] text-muted-foreground">
-        Timing, automation toggle, and Git actions for scheduled runs (demo UI).
+        Timing, automation toggle, and Git actions for scheduled runs.
       </p>
       <ScheduleConfigPanel project={project} />
     </>

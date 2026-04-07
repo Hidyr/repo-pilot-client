@@ -7,7 +7,7 @@ export default function ProjectNotFound() {
     <div className="flex flex-col items-center justify-center py-20 text-center">
       <p className="text-[15px] font-medium text-foreground">Project not found</p>
       <p className="mt-2 text-[13px] text-muted-foreground">
-        That project id is not in the demo list.
+        That project does not exist (or was deleted).
       </p>
       <Button className="mt-6" variant="chrome" render={<Link href="/projects" />}>
         Back to projects

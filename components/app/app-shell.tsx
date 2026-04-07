@@ -22,7 +22,11 @@ import { QueueStatusBar } from "@/components/app/queue-status-bar"
 import { QueueRefreshProvider } from "@/contexts/queue-refresh-context"
 import { apiBase } from "@/lib/api/env"
 import { useQueueStream } from "@/hooks/use-queue-stream"
-import { queueBadgeCount, getProject } from "@/lib/dummy-data"
+import type { QueueSnapshot } from "@/lib/api/types"
+
+function queueBadgeCount(q: QueueSnapshot): number {
+  return q.activeSlots + q.waitingCount
+}
 
 const SIDEBAR_COLLAPSED_KEY = "repopilot-sidebar-collapsed"
 
@@ -68,7 +72,7 @@ function AppHeader({
     if (pathname === "/agents") return "Agents"
     if (pathname === "/settings") return "Settings"
     if (projectId) {
-      const name = apiProjectName ?? getProject(projectId)?.name ?? "Project"
+      const name = apiProjectName ?? "Project"
       if (pathname.endsWith("/automation")) return `${name} · Automation`
       if (pathname.endsWith("/board")) return `${name} · Board`
       if (pathname.endsWith("/runs")) return `${name} · Run history`

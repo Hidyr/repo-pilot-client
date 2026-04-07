@@ -43,7 +43,7 @@ import {
 import { apiBase } from "@/lib/api/env"
 import { postFeaturesReorder, putFeature } from "@/lib/api/feature-client"
 import { useQueueRefresh } from "@/contexts/queue-refresh-context"
-import type { FeatureCard as Feature, FeatureStatus } from "@/lib/dummy-data"
+import type { Feature, FeatureStatus } from "@/lib/api/types"
 
 async function persistBoardState(
   projectId: string | undefined,

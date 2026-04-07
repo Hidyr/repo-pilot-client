@@ -207,7 +207,7 @@ export function RepopilotPanel() {
             <QueueJobChip
               active={false}
               title="shop — Checkout flow"
-              onCancel={() => toast.message("Cancel job (demo)")}
+              onCancel={() => toast.message("Cancel job")}
             />
           </div>
         </div>

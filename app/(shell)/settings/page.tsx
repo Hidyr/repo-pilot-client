@@ -45,7 +45,7 @@ export default function SettingsPage() {
   React.useEffect(() => setMounted(true), [])
 
   const appQueue = useAppQueue()
-  const activeQueueJobs = appQueue?.queue.activeCount ?? 0
+  const activeQueueJobs = appQueue?.queue.activeSlots ?? 0
 
   const themeSegment =
     mounted && resolvedTheme === "light" ? "light" : "dark"
@@ -218,7 +218,11 @@ export default function SettingsPage() {
               type="button"
               variant="outline"
               size="sm"
-              onClick={() => toast.message("Open DB folder (demo)")}
+              onClick={() =>
+                toast.message("Not available yet", {
+                  description: "Opening the DB folder requires the Tauri desktop shell.",
+                })
+              }
             >
               Open DB folder
             </Button>

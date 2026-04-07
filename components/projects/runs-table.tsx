@@ -13,10 +13,13 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { StatusBadge } from "@/components/ui/status-badge"
-import type { RunRow } from "@/lib/dummy-data"
+import type { Run } from "@/lib/api/types"
 import { cn } from "@/lib/utils"
 
-function formatDuration(sec: number) {
+function formatDuration(startedAt: string, completedAt: string | null) {
+  if (!completedAt) return "—"
+  const ms = new Date(completedAt).getTime() - new Date(startedAt).getTime()
+  const sec = Math.max(0, Math.round(ms / 1000))
   if (sec <= 0) return "—"
   const m = Math.floor(sec / 60)
   const s = sec % 60
@@ -56,7 +59,7 @@ function LogViewer({ lines }: { lines: string[] }) {
   )
 }
 
-export function RunsTable({ runs }: { runs: RunRow[] }) {
+export function RunsTable({ runs }: { runs: Run[] }) {
   const [openId, setOpenId] = React.useState<string | null>(runs[0]?.id ?? null)
 
   if (runs.length === 0) {
@@ -94,6 +97,11 @@ export function RunsTable({ runs }: { runs: RunRow[] }) {
                   : run.status === "running"
                     ? "running"
                     : "skipped"
+            const lines =
+              (run.logs ?? "")
+                .split("\n")
+                .map((x) => x.trimEnd())
+                .filter(Boolean) ?? []
             return (
               <React.Fragment key={run.id}>
                 <TableRow className="border-border">
@@ -119,10 +127,10 @@ export function RunsTable({ runs }: { runs: RunRow[] }) {
                   <TableCell className="max-w-[180px] truncate py-2 text-sm">
                     {run.status === "skipped" ? (
                       <span className="italic text-muted-foreground">
-                        {run.featureTitle}
+                        {run.featureId ? "Feature run" : "No features available"}
                       </span>
                     ) : (
-                      run.featureTitle
+                      run.featureId ? "Feature run" : "—"
                     )}
                   </TableCell>
                   <TableCell
@@ -132,16 +140,16 @@ export function RunsTable({ runs }: { runs: RunRow[] }) {
                     {formatStarted(run.startedAt)}
                   </TableCell>
                   <TableCell className="py-2 font-mono text-xs tabular-nums text-muted-foreground">
-                    {formatDuration(run.durationSec)}
+                    {formatDuration(run.startedAt, run.completedAt)}
                   </TableCell>
                   <TableCell className="py-2 font-mono text-xs">
-                    {run.commit ? (
+                    {run.commitHash ? (
                       <a
                         href="#"
                         className="inline-flex items-center gap-1 text-primary hover:underline"
                         onClick={(e) => e.preventDefault()}
                       >
-                        {run.commit.slice(0, 7)}
+                        {run.commitHash.slice(0, 7)}
                         <ExternalLink className="size-3 opacity-60" />
                       </a>
                     ) : (
@@ -149,10 +157,10 @@ export function RunsTable({ runs }: { runs: RunRow[] }) {
                     )}
                   </TableCell>
                   <TableCell className="py-2 text-xs">
-                    {run.pushed ? "✓" : "—"}
+                    {run.pushedAt ? "✓" : "—"}
                   </TableCell>
                   <TableCell className="py-2 text-xs">
-                    {run.merged ? "✓" : "—"}
+                    {run.mergedAt ? "✓" : "—"}
                   </TableCell>
                   <TableCell className="py-2">
                     <Button
@@ -172,7 +180,7 @@ export function RunsTable({ runs }: { runs: RunRow[] }) {
                       <p className="mb-2 text-[11px] font-medium text-muted-foreground">
                         Run log
                       </p>
-                      <LogViewer lines={run.logLines} />
+                      <LogViewer lines={lines.length ? lines : ["(no logs)"]} />
                     </TableCell>
                   </TableRow>
                 ) : null}

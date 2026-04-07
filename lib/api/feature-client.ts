@@ -1,16 +1,19 @@
 "use client"
 
 import { apiBase } from "@/lib/api/env"
-import type { FeatureCard, FeatureStatus } from "@/lib/dummy-data"
+import type { Feature, FeatureStatus } from "@/lib/api/types"
 
-function mapFeatureRow(row: Record<string, unknown>): FeatureCard {
+function mapFeatureRow(row: Record<string, unknown>): Feature {
   return {
     id: String(row.id),
     projectId: String(row.projectId ?? ""),
     title: String(row.title ?? ""),
-    description: String(row.description ?? ""),
+    description: (row.description as string | null) ?? null,
     status: row.status as FeatureStatus,
-    ...(typeof row.userPrompt === "string" ? { userPrompt: row.userPrompt } : {}),
+    userPrompt: (row.userPrompt as string | null) ?? null,
+    sortOrder: Number(row.sortOrder ?? 0),
+    createdAt: String(row.createdAt ?? ""),
+    updatedAt: String(row.updatedAt ?? ""),
   }
 }
 
@@ -22,7 +25,7 @@ export async function putFeature(
     description: string
     userPrompt: string
   }>
-): Promise<FeatureCard | null> {
+): Promise<Feature | null> {
   const b = apiBase()
   if (!b) return null
   const res = await fetch(`${b}/features/${id}`, {

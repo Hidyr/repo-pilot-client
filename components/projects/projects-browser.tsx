@@ -5,7 +5,7 @@ import { FolderOpen, LayoutGrid, List, Search } from "lucide-react"
 
 import { AddProjectDialog } from "@/components/projects/add-project-dialog"
 import { ProjectCard } from "@/components/projects/project-card"
-import type { Project } from "@/lib/dummy-data"
+import type { Project } from "@/lib/api/types"
 import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -91,7 +91,7 @@ export function ProjectsBrowser({ projects }: { projects: Project[] }) {
     <>
       <div className="mb-4 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <p className="text-[13px] text-muted-foreground lg:max-w-md">
-          Local-first projects and feature automation (demo data).
+          Local-first projects and feature automation.
         </p>
         <AddProjectDialog />
       </div>

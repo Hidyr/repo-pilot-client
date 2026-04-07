@@ -3,12 +3,12 @@
 import * as React from "react"
 
 import { boardWebSocketUrl } from "@/lib/api/board-ws-url"
-import type { FeatureCard } from "@/lib/dummy-data"
+import type { Feature } from "@/lib/api/types"
 
 const RECONNECT_MS = 2000
 
-export function useBoardStream(projectId: string, initial: FeatureCard[]) {
-  const [features, setFeatures] = React.useState<FeatureCard[]>(initial)
+export function useBoardStream(projectId: string, initial: Feature[]) {
+  const [features, setFeatures] = React.useState<Feature[]>(initial)
 
   React.useEffect(() => {
     setFeatures(initial)
@@ -39,7 +39,7 @@ export function useBoardStream(projectId: string, initial: FeatureCard[]) {
           const j = JSON.parse(String(ev.data)) as {
             type?: string
             projectId?: string
-            data?: { features?: FeatureCard[] }
+            data?: { features?: Feature[] }
           }
           if (j.type !== "board") return
           if (j.projectId && j.projectId !== projectId) return

@@ -19,7 +19,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { apiBase } from "@/lib/api/env"
-import type { QueueJob, QueueSnapshot } from "@/lib/dummy-data"
+import type { QueueJob, QueueSnapshot } from "@/lib/api/types"
 
 function JobChip({
   job,
@@ -29,7 +29,7 @@ function JobChip({
   onCancel?: (id: string) => void | Promise<void>
 }) {
   const label = `${job.projectName} — ${job.featureTitle}`
-  const active = job.state === "active"
+  const active = job.status === "active"
 
   return (
     <div
@@ -125,7 +125,7 @@ export function QueueStatusBar({
   )
 
   const idle =
-    !hasJobs || (q.activeCount === 0 && q.waitingCount === 0)
+    !hasJobs || (q.activeSlots === 0 && q.waitingCount === 0)
 
   if (idle) {
     return (
@@ -144,7 +144,7 @@ export function QueueStatusBar({
         <div className="border-b border-border">
           <div className="flex items-center justify-between px-3 py-2 text-xs">
             <span className="text-muted-foreground">
-              Running ({q.activeCount}/{q.maxSlots}) · Waiting ({q.waitingCount})
+              Running ({q.activeSlots}/{q.maxSlots}) · Waiting ({q.waitingCount})
             </span>
             <Button
               variant="ghost"
@@ -161,7 +161,7 @@ export function QueueStatusBar({
                 key={job.id}
                 job={job}
                 onCancel={
-                  job.state === "waiting" ? () => cancelWaitingJob(job.id) : undefined
+                  job.status === "waiting" ? () => cancelWaitingJob(job.id) : undefined
                 }
               />
             ))}
@@ -170,7 +170,7 @@ export function QueueStatusBar({
       ) : (
         <div className="flex h-8 items-center justify-between px-3 text-xs text-muted-foreground">
           <span>
-            Running ({q.activeCount}/{q.maxSlots}) · Waiting ({q.waitingCount})
+            Running ({q.activeSlots}/{q.maxSlots}) · Waiting ({q.waitingCount})
           </span>
           <Button
             variant="ghost"

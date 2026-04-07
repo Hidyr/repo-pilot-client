@@ -2,7 +2,7 @@
 
 import * as React from "react"
 
-import type { QueueSnapshot } from "@/lib/dummy-data"
+import type { QueueSnapshot } from "@/lib/api/types"
 
 type QueueShellValue = {
   queue: QueueSnapshot

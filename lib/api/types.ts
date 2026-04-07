@@ -1,0 +1,101 @@
+export type FeatureStatus = "pending" | "queued" | "in_progress" | "done" | "failed"
+
+export type Project = {
+  id: string
+  name: string
+  description: string | null
+  localPath: string
+  isGitRepo: boolean
+  remoteUrl: string | null
+  remoteName: string | null
+  defaultBranch: string | null
+  createdAt: string
+  updatedAt: string
+  pendingCount: number
+  doneCount: number
+  lastRun: Run | null
+  hasActiveRun: boolean
+}
+
+export type Feature = {
+  id: string
+  projectId: string
+  title: string
+  description: string | null
+  userPrompt: string | null
+  status: FeatureStatus
+  sortOrder: number
+  createdAt: string
+  updatedAt: string
+}
+
+export type RunStatus = "queued" | "running" | "success" | "failed" | "skipped"
+
+export type Run = {
+  id: string
+  projectId: string
+  featureId: string | null
+  agentId: string | null
+  status: RunStatus
+  logs: string | null
+  errorMessage: string | null
+  startedAt: string
+  completedAt: string | null
+  commitHash: string | null
+  pushedAt: string | null
+  mergedAt: string | null
+  queuePosition: number | null
+}
+
+export type QueueJob = {
+  id: string
+  projectId: string
+  projectName: string
+  featureId: string
+  featureTitle: string
+  status: "waiting" | "active"
+  priority: number
+  createdAt: string
+  startedAt?: string
+}
+
+export type QueueSnapshot = {
+  maxSlots: number
+  activeSlots: number
+  waitingCount: number
+  jobs: QueueJob[]
+}
+
+export type Schedule = {
+  enabled: boolean
+  intervalType: "fixed" | "random"
+  runsPerDay: number
+  featuresPerRun: number
+  executionTimes?: string[]
+  gitAutoPull: boolean
+  gitAutoCommit: boolean
+  gitAutoPush: boolean
+  gitAutoMerge: boolean
+}
+
+export type AgentType = "cursor" | "claude-code" | "custom"
+
+export type Agent = {
+  id: string
+  name: string
+  type: AgentType
+  commandPath: string
+  enabled: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export type Settings = {
+  theme: "dark" | "light"
+  autostart: string
+  max_concurrent_runs: string
+  minimize_to_tray: string
+  max_concurrent_runs_editable: string
+  max_concurrent_runs_lock_reason: string
+}
+

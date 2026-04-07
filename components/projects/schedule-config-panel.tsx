@@ -23,7 +23,7 @@ import {
   SettingsRow,
   SettingsRowText,
 } from "@/components/design-system/settings-group"
-import type { Project } from "@/lib/dummy-data"
+import type { Project } from "@/lib/api/types"
 import { apiBase } from "@/lib/api/env"
 import { toast } from "sonner"
 
@@ -380,7 +380,7 @@ export function ScheduleConfigPanel({ project }: { project: Project }) {
           size="sm"
           onClick={async () => {
             const ok = await saveSchedule(buildPayload(), { notifyError: true })
-            if (ok) toast.success("Schedule saved (demo)")
+            if (ok) toast.success("Schedule saved")
           }}
         >
           Save schedule

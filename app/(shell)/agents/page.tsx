@@ -13,13 +13,13 @@ import {
 } from "@/components/design-system/settings-group"
 import { ShellPage } from "@/components/app/shell-page"
 import { apiBase } from "@/lib/api/env"
-import { DUMMY_AGENTS, type AgentRow } from "@/lib/dummy-data"
+import type { Agent } from "@/lib/api/types"
 
 function AgentRowView({
   agent,
   onToggle,
 }: {
-  agent: AgentRow
+  agent: Agent
   onToggle: (id: string, enabled: boolean) => void
 }) {
   const [testing, setTesting] = React.useState(false)
@@ -30,7 +30,7 @@ function AgentRowView({
       <SettingsRowText
         title={agent.name}
         description={
-          <span className="font-mono text-[11px]">{agent.command}</span>
+          <span className="font-mono text-[11px]">{agent.commandPath}</span>
         }
         titleClassName="font-medium"
       />
@@ -76,17 +76,9 @@ function AgentRowView({
                 })
               return
             }
-            window.setTimeout(() => {
-              setTesting(false)
-              const ok = Math.random() > 0.2
-              if (ok) {
-                setTestResult("ok")
-                toast.success("Agent OK", { description: "cursor-agent 1.2.3 (demo)" })
-              } else {
-                setTestResult("err")
-                toast.error("Test failed", { description: "Connection refused (demo)" })
-              }
-            }, 900)
+            setTesting(false)
+            setTestResult("err")
+            toast.error("Backend not configured")
           }}
         >
           {testing ? (
@@ -105,15 +97,15 @@ function AgentRowView({
 }
 
 export default function AgentsPage() {
-  const [agents, setAgents] = React.useState(DUMMY_AGENTS)
+  const [agents, setAgents] = React.useState<Agent[]>([])
 
   React.useEffect(() => {
     const b = apiBase()
     if (!b) return
     fetch(`${b}/agents`)
       .then((r) => (r.ok ? r.json() : null))
-      .then((j: { data?: AgentRow[] } | null) => {
-        if (j?.data?.length) setAgents(j.data)
+      .then((j: { data?: Agent[] } | null) => {
+        if (j?.data) setAgents(j.data)
       })
       .catch(() => {})
   }, [])
@@ -121,7 +113,7 @@ export default function AgentsPage() {
   return (
     <ShellPage maxWidth="standard">
       <p className="mb-6 text-[13px] text-muted-foreground">
-        Configured agents for feature runs. Test calls are simulated.
+        Configured agents for feature runs.
       </p>
       <SettingsGroup>
         {agents.map((a) => (

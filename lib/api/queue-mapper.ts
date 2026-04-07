@@ -1,4 +1,4 @@
-import type { QueueJob, QueueSnapshot } from "@/lib/dummy-data"
+import type { QueueSnapshot } from "@/lib/api/types"
 
 /** Shape from GET /api/queue `data` (prompt.md §5.6) */
 export type QueueApiData = {
@@ -7,26 +7,32 @@ export type QueueApiData = {
   waitingCount: number
   jobs: Array<{
     id: string
-    projectId?: string
+    projectId: string
     projectName: string
     featureId: string
     featureTitle: string
     status: "waiting" | "active"
+    priority: number
+    createdAt: string
+    startedAt?: string
   }>
 }
 
 export function mapQueueApiToSnapshot(d: QueueApiData): QueueSnapshot {
-  const jobs: QueueJob[] = d.jobs.map((j) => ({
-    id: j.id,
-    projectName: j.projectName,
-    featureTitle: j.featureTitle,
-    state: j.status === "active" ? "active" : "waiting",
-    featureId: j.featureId,
-  }))
   return {
     maxSlots: d.maxSlots,
-    activeCount: d.activeSlots,
+    activeSlots: d.activeSlots,
     waitingCount: d.waitingCount,
-    jobs,
+    jobs: d.jobs.map((j) => ({
+      id: j.id,
+      projectId: j.projectId,
+      projectName: j.projectName,
+      featureId: j.featureId,
+      featureTitle: j.featureTitle,
+      status: j.status,
+      priority: j.priority,
+      createdAt: j.createdAt,
+      ...(j.startedAt ? { startedAt: j.startedAt } : {}),
+    })),
   }
 }

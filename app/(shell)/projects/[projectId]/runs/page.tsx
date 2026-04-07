@@ -15,7 +15,7 @@ export default async function ProjectRunsPage({
   return (
     <>
       <p className="mb-4 text-[13px] text-muted-foreground">
-        Newest first. Expand a row for the run log (demo data).
+        Newest first. Expand a row for the run log.
       </p>
       <RunsTable runs={runs} />
     </>
