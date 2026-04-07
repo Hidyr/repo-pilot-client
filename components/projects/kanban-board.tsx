@@ -221,7 +221,8 @@ function SortableKanbanCard({
   projectId?: string
   onCancelRun?: (feature: Feature) => void | Promise<void>
 }) {
-  const locked = feature.status === "queued" || feature.status === "in_progress"
+  // Allow moving `queued` (waiting) cards back/forth; only lock active agent runs.
+  const locked = feature.status === "in_progress"
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: feature.id,
     disabled: locked,
