@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import ReactMarkdown from "react-markdown"
 import { useRouter } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
@@ -22,6 +21,7 @@ import type { Project } from "@/lib/api/types"
 import { apiBase } from "@/lib/api/env"
 import { toast } from "sonner"
 import { deleteProject } from "@/lib/api/project-client"
+import { ProjectReadmeView } from "@/components/projects/project-readme-view"
 import { useQueueRefresh } from "@/contexts/queue-refresh-context"
 
 export function ProjectOverview({ project }: { project: Project }) {
@@ -29,7 +29,6 @@ export function ProjectOverview({ project }: { project: Project }) {
   const refreshQueue = useQueueRefresh()
   const [name, setName] = React.useState(project.name)
   const [description, setDescription] = React.useState(project.description ?? "")
-  const [readme, setReadme] = React.useState<{ exists: boolean; markdown: string } | null>(null)
   const [deleting, setDeleting] = React.useState(false)
 
   const save = React.useCallback(
@@ -47,25 +46,6 @@ export function ProjectOverview({ project }: { project: Project }) {
     },
     [project.id]
   )
-
-  React.useEffect(() => {
-    const b = apiBase()
-    if (!b) return
-    let cancelled = false
-    fetch(`${b}/projects/${project.id}/readme`, { cache: "no-store" })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((j: { data?: { exists?: boolean; markdown?: string } } | null) => {
-        if (cancelled) return
-        setReadme({
-          exists: j?.data?.exists === true,
-          markdown: String(j?.data?.markdown ?? ""),
-        })
-      })
-      .catch(() => {})
-    return () => {
-      cancelled = true
-    }
-  }, [project.id])
 
   return (
     <div className="flex w-full flex-col gap-8">
@@ -118,18 +98,7 @@ export function ProjectOverview({ project }: { project: Project }) {
         </div>
       </section>
 
-      <section>
-        <h2 className="mb-2 text-[13px] font-medium text-foreground">README.md</h2>
-        {!readme ? (
-          <p className="text-[12px] text-muted-foreground">Loading…</p>
-        ) : !readme.exists ? (
-          <p className="text-[12px] text-muted-foreground">No README.md found in this project.</p>
-        ) : (
-          <div className="prose prose-invert max-w-none rounded-lg border border-border bg-muted/20 p-4 text-[13px]">
-            <ReactMarkdown>{readme.markdown}</ReactMarkdown>
-          </div>
-        )}
-      </section>
+      <ProjectReadmeView projectId={project.id} />
 
       <section className="rounded-lg border border-destructive/30 bg-destructive/5 p-4">
         <h2 className="mb-1 text-[13px] font-medium text-destructive">Remove project</h2>
