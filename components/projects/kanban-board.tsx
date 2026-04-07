@@ -24,7 +24,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import { Clock, X } from "lucide-react"
+import { Clock, Plus, X } from "lucide-react"
 import { toast } from "sonner"
 
 import { cn } from "@/lib/utils"
@@ -40,8 +40,20 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 import { apiBase } from "@/lib/api/env"
-import { postFeaturesReorder, putFeature } from "@/lib/api/feature-client"
+import { postFeature, postFeaturesReorder, putFeature } from "@/lib/api/feature-client"
 import { useQueueRefresh } from "@/contexts/queue-refresh-context"
 import type { Feature, FeatureStatus } from "@/lib/api/types"
 
@@ -134,10 +146,12 @@ function mergeStatusFromColumns(
 function FeatureColumn({
   columnId,
   title,
+  headerRight,
   children,
 }: {
   columnId: ColumnId
   title: string
+  headerRight?: React.ReactNode
   children: React.ReactNode
 }) {
   const { setNodeRef, isOver } = useDroppable({
@@ -145,8 +159,11 @@ function FeatureColumn({
   })
   return (
     <div className="flex min-h-[280px] min-w-0 flex-1 flex-col rounded-lg border border-border bg-muted/20">
-      <div className="border-b border-border px-3 py-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-        {title}
+      <div className="flex items-center justify-between gap-2 border-b border-border px-3 py-2">
+        <div className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+          {title}
+        </div>
+        {headerRight ? <div className="shrink-0">{headerRight}</div> : null}
       </div>
       <div
         ref={setNodeRef}
@@ -350,6 +367,14 @@ export function KanbanBoard({
   )
   const [activeId, setActiveId] = useState<string | null>(null)
 
+  const [addOpen, setAddOpen] = useState(false)
+  const [adding, setAdding] = useState(false)
+  const [newTitle, setNewTitle] = useState("")
+  const [newDescription, setNewDescription] = useState("")
+  const [newPrompt, setNewPrompt] = useState("")
+
+  const canCreate = Boolean(projectId && apiBase())
+
   useEffect(() => {
     setColumns(columnsFromFeatures(features))
     setFeaturesById(featureMapFromList(features))
@@ -453,6 +478,33 @@ export function KanbanBoard({
 
   const activeFeature = activeId ? featuresById[activeId] : null
 
+  const addFeature = useCallback(async () => {
+    if (!projectId) return
+    const title = newTitle.trim()
+    if (!title) return
+    setAdding(true)
+    try {
+      const created = await postFeature({
+        projectId,
+        title,
+        description: newDescription.trim() ? newDescription.trim() : undefined,
+        userPrompt: newPrompt.trim() ? newPrompt.trim() : undefined,
+      })
+      if (!created) throw new Error("Could not create feature")
+      setNewTitle("")
+      setNewDescription("")
+      setNewPrompt("")
+      setAddOpen(false)
+      setFeaturesById((cur) => ({ ...cur, [created.id]: created }))
+      setColumns((cur) => ({ ...cur, pending: [...cur.pending, created.id] }))
+      toast.success("Feature added")
+    } catch (e) {
+      toast.error("Could not add feature", { description: (e as Error)?.message ?? "Error" })
+    } finally {
+      setAdding(false)
+    }
+  }, [newTitle, newDescription, newPrompt, projectId])
+
   return (
     <DndContext
       sensors={sensors}
@@ -466,7 +518,98 @@ export function KanbanBoard({
           ColumnId,
           string,
        ][]).map(([columnId, title]) => (
-          <FeatureColumn key={columnId} columnId={columnId} title={title}>
+          <FeatureColumn
+            key={columnId}
+            columnId={columnId}
+            title={title}
+            headerRight={
+              columnId === "pending" ? (
+                <>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    disabled={!canCreate}
+                    onClick={() => setAddOpen(true)}
+                  >
+                    <Plus className="size-3" />
+                    Add feature
+                  </Button>
+                  <Dialog open={addOpen} onOpenChange={setAddOpen}>
+                    <DialogContent className="sm:max-w-lg" showCloseButton>
+                      <DialogHeader>
+                        <DialogTitle>Add feature</DialogTitle>
+                        <DialogDescription>
+                          Create a new feature in the Pending column.
+                        </DialogDescription>
+                      </DialogHeader>
+
+                      <div className="space-y-4">
+                        <div className="space-y-1.5">
+                          <Label htmlFor="new-feature-title">Title</Label>
+                          <Input
+                            id="new-feature-title"
+                            value={newTitle}
+                            onChange={(e) => setNewTitle(e.target.value)}
+                            placeholder="Short, specific title"
+                            disabled={adding}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                e.preventDefault()
+                                void addFeature()
+                              }
+                            }}
+                          />
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <Label htmlFor="new-feature-desc">Description</Label>
+                          <Textarea
+                            id="new-feature-desc"
+                            value={newDescription}
+                            onChange={(e) => setNewDescription(e.target.value)}
+                            placeholder="Optional. What should this do?"
+                            disabled={adding}
+                            className="min-h-24"
+                          />
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <Label htmlFor="new-feature-prompt">Agent prompt</Label>
+                          <Textarea
+                            id="new-feature-prompt"
+                            value={newPrompt}
+                            onChange={(e) => setNewPrompt(e.target.value)}
+                            placeholder="Optional. Exact instructions for the agent."
+                            disabled={adding}
+                            className="min-h-28 font-mono text-xs"
+                          />
+                        </div>
+                      </div>
+
+                      <DialogFooter>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          disabled={adding}
+                          onClick={() => setAddOpen(false)}
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          type="button"
+                          disabled={adding || !newTitle.trim()}
+                          onClick={() => void addFeature()}
+                        >
+                          {adding ? "Adding…" : "Add feature"}
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </>
+              ) : null
+            }
+          >
             <SortableContext
               items={columns[columnId]}
               strategy={verticalListSortingStrategy}

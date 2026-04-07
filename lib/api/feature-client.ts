@@ -53,3 +53,27 @@ export async function postFeaturesReorder(projectId: string, orderedIds: string[
     throw new Error(`reorder: ${res.status}`)
   }
 }
+
+export async function postFeature(body: {
+  projectId: string
+  title: string
+  description?: string
+  userPrompt?: string
+}): Promise<Feature | null> {
+  const b = apiBase()
+  if (!b) return null
+  const res = await fetch(`${b}/features`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) {
+    const j = (await res.json().catch(() => null)) as
+      | { error?: { message?: string } }
+      | null
+    throw new Error(j?.error?.message ?? `create feature: ${res.status}`)
+  }
+  const j = (await res.json()) as { data?: Record<string, unknown> }
+  if (!j.data) return null
+  return mapFeatureRow(j.data)
+}
