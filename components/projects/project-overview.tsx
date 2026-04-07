@@ -17,10 +17,21 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import type { Project } from "@/lib/api/types"
 import { apiBase } from "@/lib/api/env"
 import { toast } from "sonner"
-import { deleteProject } from "@/lib/api/project-client"
+import {
+  checkoutProjectBranch,
+  deleteProject,
+  fetchProjectGitBranches,
+} from "@/lib/api/project-client"
 import { ProjectReadmeView } from "@/components/projects/project-readme-view"
 import { useQueueRefresh } from "@/contexts/queue-refresh-context"
 
@@ -30,6 +41,61 @@ export function ProjectOverview({ project }: { project: Project }) {
   const [name, setName] = React.useState(project.name)
   const [description, setDescription] = React.useState(project.description ?? "")
   const [deleting, setDeleting] = React.useState(false)
+
+  const [gitBranches, setGitBranches] = React.useState<string[]>([])
+  const [gitCurrent, setGitCurrent] = React.useState(project.defaultBranch ?? "")
+  const [gitBranchesLoading, setGitBranchesLoading] = React.useState(false)
+  const [gitBranchesErr, setGitBranchesErr] = React.useState<string | null>(null)
+  const [gitCheckoutBusy, setGitCheckoutBusy] = React.useState(false)
+
+  React.useEffect(() => {
+    setGitCurrent(project.defaultBranch ?? "")
+  }, [project.defaultBranch])
+
+  React.useEffect(() => {
+    if (!project.isGitRepo) return
+    let cancelled = false
+    setGitBranchesLoading(true)
+    setGitBranchesErr(null)
+    void (async () => {
+      const r = await fetchProjectGitBranches(project.id)
+      if (cancelled) return
+      setGitBranchesLoading(false)
+      if (!r.ok) {
+        setGitBranchesErr(r.message)
+        return
+      }
+      setGitBranches(r.branches)
+      setGitCurrent(r.current || project.defaultBranch || "")
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [project.id, project.isGitRepo, project.defaultBranch])
+
+  const onBranchChange = React.useCallback(
+    async (next: string | null) => {
+      if (next == null || next === gitCurrent) return
+      setGitCheckoutBusy(true)
+      const r = await checkoutProjectBranch(project.id, next)
+      setGitCheckoutBusy(false)
+      if (!r.ok) {
+        toast.error("Could not check out branch", { description: r.message })
+        return
+      }
+      setGitCurrent(
+        r.project.defaultBranch ?? next
+      )
+      toast.success(`Checked out ${next}`)
+      router.refresh()
+      const br = await fetchProjectGitBranches(project.id)
+      if (br.ok) {
+        setGitBranches(br.branches)
+        setGitCurrent(br.current || next)
+      }
+    },
+    [gitCurrent, project.id, router]
+  )
 
   const save = React.useCallback(
     async (patch: { name?: string; description?: string }) => {
@@ -84,10 +150,42 @@ export function ProjectOverview({ project }: { project: Project }) {
                 <span className="text-muted-foreground">Remote: </span>
                 {project.remoteUrl}
               </p>
-              <p className="mt-1">
-                <span className="text-muted-foreground">Branch: </span>
-                {project.defaultBranch ?? "—"}
-              </p>
+              <div className="mt-3 flex flex-col gap-1.5 sm:flex-row sm:flex-wrap sm:items-center">
+                <span className="text-muted-foreground">Branch</span>
+                {gitBranchesLoading ? (
+                  <span className="text-[12px] text-muted-foreground">
+                    Loading branches…
+                  </span>
+                ) : gitBranchesErr ? (
+                  <span className="font-mono text-xs text-foreground">
+                    {project.defaultBranch ?? "—"}
+                    <span className="ml-2 text-muted-foreground">
+                      ({gitBranchesErr})
+                    </span>
+                  </span>
+                ) : gitBranches.length === 0 ? (
+                  <span className="font-mono text-xs text-foreground">
+                    {gitCurrent || project.defaultBranch || "—"}
+                  </span>
+                ) : (
+                  <Select
+                    value={gitCurrent}
+                    onValueChange={(v) => void onBranchChange(v)}
+                    disabled={gitCheckoutBusy}
+                  >
+                    <SelectTrigger size="sm" className="w-full min-w-[200px] max-w-sm sm:w-[min(100%,280px)]">
+                      <SelectValue placeholder="Select branch" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {gitBranches.map((b) => (
+                        <SelectItem key={b} value={b}>
+                          {b}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              </div>
             </>
           ) : (
             <p className="mt-3 text-[12px] text-muted-foreground">
