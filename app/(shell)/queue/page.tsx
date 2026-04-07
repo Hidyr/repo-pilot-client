@@ -14,7 +14,7 @@ export default async function QueuePage() {
         ; <code className="font-mono text-[11px] text-muted-foreground">GET /api/queue</code> is
         for snapshots and manual refresh.
       </p>
-      <div className="rounded-lg border border-border border-red-400 text-red-400 bg-card">
+      <div className="rounded-lg border border-border bg-card">
         <div className="px-4 py-3 text-[13px] font-medium">
           Jobs
         </div>
