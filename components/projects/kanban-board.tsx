@@ -495,8 +495,14 @@ export function KanbanBoard({
       setNewDescription("")
       setNewPrompt("")
       setAddOpen(false)
-      setFeaturesById((cur) => ({ ...cur, [created.id]: created }))
-      setColumns((cur) => ({ ...cur, pending: [...cur.pending, created.id] }))
+      setFeaturesById((cur) => {
+        if (cur[created.id]) return cur
+        return { ...cur, [created.id]: created }
+      })
+      setColumns((cur) => {
+        if (cur.pending.includes(created.id)) return cur
+        return { ...cur, pending: [...cur.pending, created.id] }
+      })
       toast.success("Feature added")
     } catch (e) {
       toast.error("Could not add feature", { description: (e as Error)?.message ?? "Error" })

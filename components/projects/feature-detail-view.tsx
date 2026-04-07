@@ -2,13 +2,28 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { ArrowLeft } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { ArrowLeft, Trash2 } from "lucide-react"
+import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { Label } from "@/components/ui/label"
 import { StatusBadge } from "@/components/ui/status-badge"
+import { Textarea } from "@/components/ui/textarea"
 import { apiBase } from "@/lib/api/env"
-import { putFeature } from "@/lib/api/feature-client"
+import { deleteFeature, putFeature } from "@/lib/api/feature-client"
+import { useQueueRefresh } from "@/contexts/queue-refresh-context"
 import { cn } from "@/lib/utils"
 import type { Feature, Run } from "@/lib/api/types"
 
@@ -44,13 +59,19 @@ export function FeatureDetailView({
   feature: Feature
   initialRuns: Run[]
 }) {
+  const router = useRouter()
+  const refreshQueue = useQueueRefresh()
   const [feature, setFeature] = React.useState(initialFeature)
   const [runs, setRuns] = React.useState<Run[]>(initialRuns)
+  const [descriptionDraft, setDescriptionDraft] = React.useState(feature.description ?? "")
   const [userPromptDraft, setUserPromptDraft] = React.useState(feature.userPrompt ?? "")
   const saveTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null)
+  const descTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [deleting, setDeleting] = React.useState(false)
 
   React.useEffect(() => {
     setFeature(initialFeature)
+    setDescriptionDraft(initialFeature.description ?? "")
     setUserPromptDraft(initialFeature.userPrompt ?? "")
   }, [initialFeature])
 
@@ -91,6 +112,19 @@ export function FeatureDetailView({
     [feature.id]
   )
 
+  const scheduleSaveDescription = React.useCallback(
+    (value: string) => {
+      if (descTimer.current) clearTimeout(descTimer.current)
+      descTimer.current = setTimeout(() => {
+        const trimmed = value.trim()
+        void putFeature(feature.id, { description: trimmed ? trimmed : null }).then((f) => {
+          if (f) setFeature(f)
+        })
+      }, 450)
+    },
+    [feature.id]
+  )
+
   const boardHref = `/projects/${feature.projectId}/board`
 
   return (
@@ -110,12 +144,81 @@ export function FeatureDetailView({
           <div className="flex flex-wrap items-center gap-2">
             <h1 className="text-xl font-semibold tracking-tight text-foreground">{feature.title}</h1>
             <StatusBadge status={feature.status} className="text-[10px]" />
+            <AlertDialog>
+              <AlertDialogTrigger
+                render={
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-sm"
+                    disabled={deleting}
+                    className="shrink-0 text-muted-foreground/50 hover:text-destructive hover:bg-destructive/5"
+                    aria-label="Delete feature"
+                  />
+                }
+              >
+                <Trash2 className="size-3.5" />
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete this feature?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Removes the feature, its runs, and any queue jobs. An active run will be
+                    cancelled. This cannot be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    onClick={() => {
+                      void (async () => {
+                        setDeleting(true)
+                        try {
+                          const result = await deleteFeature(feature.id)
+                          if (!result.ok) {
+                            toast.error("Could not delete feature", { description: result.message })
+                            return
+                          }
+                          toast.success("Feature removed")
+                          await refreshQueue?.()
+                          router.push(boardHref)
+                          router.refresh()
+                        } finally {
+                          setDeleting(false)
+                        }
+                      })()
+                    }}
+                  >
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
-          <p className="max-w-2xl text-[13px] leading-relaxed text-muted-foreground">
-            {feature.description || "No description."}
-          </p>
         </div>
       </div>
+
+      <section className="space-y-2">
+        <Label htmlFor="feature-desc" className="text-[13px] text-foreground">
+          Description
+        </Label>
+        <p className="text-[11px] text-muted-foreground">
+          Summary of what this feature is for. Saved automatically when you stop typing.
+        </p>
+        <Textarea
+          id="feature-desc"
+          value={descriptionDraft}
+          onChange={(e) => {
+            const v = e.target.value
+            setDescriptionDraft(v)
+            scheduleSaveDescription(v)
+          }}
+          rows={4}
+          placeholder="Optional. What should ship in this feature?"
+          className="max-w-3xl"
+        />
+      </section>
 
       <section className="space-y-2">
         <Label className="text-[13px] text-foreground">Agent instructions</Label>
