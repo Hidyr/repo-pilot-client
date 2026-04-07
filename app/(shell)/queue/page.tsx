@@ -1,16 +1,19 @@
 import { Clock } from "lucide-react"
 
 import { ShellPage } from "@/components/app/shell-page"
-import { DUMMY_QUEUE } from "@/lib/dummy-data"
+import { getQueueSnapshot } from "@/lib/api/server-data"
 
-export default function QueuePage() {
-  const q = DUMMY_QUEUE
+export default async function QueuePage() {
+  const q = await getQueueSnapshot()
 
   return (
     <ShellPage maxWidth="standard">
       <p className="mb-6 text-[13px] text-muted-foreground">
-        Live queue mirrors the bar at the bottom (static demo). In production this
-        polls <code className="font-mono text-[11px] text-muted-foreground">GET /api/queue</code>.
+        Live queue mirrors the bar at the bottom (static demo). In production the shell uses a
+        WebSocket to{" "}
+        <code className="font-mono text-[11px] text-muted-foreground">/api/queue/ws</code>
+        ; <code className="font-mono text-[11px] text-muted-foreground">GET /api/queue</code> is
+        for snapshots and manual refresh.
       </p>
       <div className="rounded-lg border border-border bg-card">
         <div className="border-b border-border px-4 py-3 text-[13px] font-medium">

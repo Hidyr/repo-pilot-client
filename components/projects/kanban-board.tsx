@@ -1,6 +1,7 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import {
   DndContext,
   DragOverlay,
@@ -22,11 +23,52 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import { Clock } from "lucide-react"
+import { Clock, X } from "lucide-react"
+import { toast } from "sonner"
 
 import { cn } from "@/lib/utils"
 import { StatusBadge } from "@/components/ui/status-badge"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { apiBase } from "@/lib/api/env"
+import { postFeaturesReorder, putFeature } from "@/lib/api/feature-client"
+import { useQueueRefresh } from "@/contexts/queue-refresh-context"
 import type { FeatureCard as Feature, FeatureStatus } from "@/lib/dummy-data"
+
+async function persistBoardState(
+  projectId: string | undefined,
+  prev: Record<string, Feature>,
+  nextMap: Record<string, Feature>,
+  cols: Record<ColumnId, string[]>,
+  refreshQueue: (() => Promise<void>) | null
+) {
+  if (!projectId || !apiBase()) return
+  const tasks: Promise<unknown>[] = []
+  for (const id of Object.keys(nextMap)) {
+    if (prev[id]?.status !== nextMap[id]?.status) {
+      tasks.push(putFeature(id, { status: nextMap[id]!.status }))
+    }
+  }
+  const orderedIds = [...cols.pending, ...cols.active, ...cols.done]
+  tasks.push(postFeaturesReorder(projectId, orderedIds))
+  try {
+    await Promise.all(tasks)
+  } catch {
+    /* individual requests may fail; queue poll will reconcile */
+  }
+  // Queue is live via WebSocket; HTTP refresh is only needed when explicitly requested elsewhere.
+  // Keep this hook optional/no-op to avoid redundant GETs.
+  await refreshQueue?.()
+}
 
 const COLUMN_IDS = ["pending", "active", "done"] as const
 type ColumnId = (typeof COLUMN_IDS)[number]
@@ -148,7 +190,13 @@ function KanbanCard({ feature }: { feature: Feature }) {
   )
 }
 
-function SortableKanbanCard({ feature }: { feature: Feature }) {
+function SortableKanbanCard({
+  feature,
+  onCancelRun,
+}: {
+  feature: Feature
+  onCancelRun?: (feature: Feature) => void | Promise<void>
+}) {
   const locked = feature.status === "queued" || feature.status === "in_progress"
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: feature.id,
@@ -161,19 +209,114 @@ function SortableKanbanCard({ feature }: { feature: Feature }) {
     opacity: isDragging ? 0.45 : 1,
   }
 
+  const showCancel =
+    feature.status === "in_progress" && onCancelRun != null && !isDragging
+
   return (
     <div ref={setNodeRef} style={style} className="touch-none">
-      <div
-        {...(locked ? {} : { ...attributes, ...listeners })}
-        className={cn(locked ? "cursor-default" : "cursor-grab active:cursor-grabbing")}
-      >
-        <KanbanCard feature={feature} />
+      <div className="relative">
+        {showCancel ? (
+          <div
+            className="absolute top-1 right-1 z-20"
+            onPointerDown={(e) => e.stopPropagation()}
+          >
+            <AlertDialog>
+              <AlertDialogTrigger
+                render={
+                  <button
+                    type="button"
+                    className="rounded p-0.5 text-muted-foreground hover:bg-muted hover:text-foreground"
+                    aria-label="Cancel run"
+                  />
+                }
+              >
+                <X className="size-3.5" strokeWidth={2} />
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Cancel this run?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Stops the active job and moves this card back to Pending.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Back</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => {
+                      void onCancelRun(feature)
+                    }}
+                  >
+                    Cancel run
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+        ) : null}
+        <div
+          {...(locked ? {} : { ...attributes, ...listeners })}
+          className={cn(locked ? "cursor-default" : "cursor-grab active:cursor-grabbing")}
+        >
+          <KanbanCard feature={feature} />
+        </div>
       </div>
     </div>
   )
 }
 
-export function KanbanBoard({ features }: { features: Feature[] }) {
+export function KanbanBoard({
+  features,
+  projectId,
+}: {
+  features: Feature[]
+  /** When set and API is configured, drag/drop persists to the server */
+  projectId?: string
+}) {
+  const router = useRouter()
+  const refreshQueue = useQueueRefresh()
+
+  const cancelFeatureRun = useCallback(
+    async (feature: Feature) => {
+      const b = apiBase()
+      if (!b) {
+        toast.message("API not configured")
+        return
+      }
+      try {
+        const r = await fetch(`${b}/queue`)
+        if (!r.ok) {
+          toast.error("Could not load queue")
+          return
+        }
+        const j = (await r.json()) as {
+          data: {
+            jobs: Array<{ id: string; featureId: string; projectId?: string }>
+          }
+        }
+        const job = j.data.jobs.find(
+          (x) =>
+            x.featureId === feature.id &&
+            (!projectId || !x.projectId || x.projectId === projectId)
+        )
+        if (!job) {
+          toast.error("No queue job found for this card")
+          return
+        }
+        const del = await fetch(`${b}/queue/${job.id}`, { method: "DELETE" })
+        if (!del.ok) {
+          toast.error("Could not cancel run")
+          return
+        }
+        await refreshQueue?.()
+        router.refresh()
+        toast.message("Run cancelled")
+      } catch {
+        toast.error("Could not cancel run")
+      }
+    },
+    [projectId, refreshQueue, router]
+  )
+
   const [columns, setColumns] = useState<Record<ColumnId, string[]>>(() =>
     columnsFromFeatures(features)
   )
@@ -243,29 +386,38 @@ export function KanbanBoard({ features }: { features: Feature[] }) {
     const { active, over } = event
     setActiveId(null)
 
-    setColumns((current) => {
-      let next = current
-      if (over) {
-        const activeIdStr = String(active.id)
-        const overIdStr = String(over.id)
-        const activeCol = findContainer(current, activeIdStr)
-        const overCol = findContainer(current, overIdStr)
+    // IMPORTANT: keep React state updaters pure. Calling async persistence inside a
+    // setState updater can run multiple times in Strict Mode (double-invoked),
+    // causing duplicate reorder/queue requests.
+    const current = columns
+    let next = current
 
-        if (activeCol && overCol && activeCol === overCol) {
-          const oldIndex = current[activeCol].indexOf(activeIdStr)
-          const newIndex = current[overCol].indexOf(overIdStr)
-          if (oldIndex !== -1 && newIndex !== -1 && oldIndex !== newIndex) {
-            next = {
-              ...current,
-              [activeCol]: arrayMove(current[activeCol], oldIndex, newIndex),
-            }
+    if (over) {
+      const activeIdStr = String(active.id)
+      const overIdStr = String(over.id)
+      const activeCol = findContainer(current, activeIdStr)
+      const overCol = findContainer(current, overIdStr)
+
+      if (activeCol && overCol && activeCol === overCol) {
+        const oldIndex = current[activeCol].indexOf(activeIdStr)
+        const newIndex = current[overCol].indexOf(overIdStr)
+        if (oldIndex !== -1 && newIndex !== -1 && oldIndex !== newIndex) {
+          next = {
+            ...current,
+            [activeCol]: arrayMove(current[activeCol], oldIndex, newIndex),
           }
         }
       }
+    }
 
-      setFeaturesById((prev) => mergeStatusFromColumns(next, prev))
-      return next
-    })
+    const prevMap = featuresById
+    const nextMap = mergeStatusFromColumns(next, prevMap)
+
+    setColumns(next)
+    setFeaturesById(nextMap)
+
+    // Persist once per completed drop.
+    void persistBoardState(projectId, prevMap, nextMap, next, refreshQueue)
   }
 
   const activeFeature = activeId ? featuresById[activeId] : null
@@ -291,7 +443,15 @@ export function KanbanBoard({ features }: { features: Feature[] }) {
               {columns[columnId].map((id) => {
                 const f = featuresById[id]
                 if (!f) return null
-                return <SortableKanbanCard key={id} feature={f} />
+                return (
+                  <SortableKanbanCard
+                    key={id}
+                    feature={f}
+                    onCancelRun={
+                      projectId && apiBase() ? cancelFeatureRun : undefined
+                    }
+                  />
+                )
               })}
             </SortableContext>
           </FeatureColumn>

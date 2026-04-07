@@ -18,8 +18,11 @@ import {
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { DUMMY_QUEUE, queueBadgeCount, getProject } from "@/lib/dummy-data"
 import { QueueStatusBar } from "@/components/app/queue-status-bar"
+import { QueueRefreshProvider } from "@/contexts/queue-refresh-context"
+import { apiBase } from "@/lib/api/env"
+import { useQueueStream } from "@/hooks/use-queue-stream"
+import { queueBadgeCount, getProject } from "@/lib/dummy-data"
 
 const SIDEBAR_COLLAPSED_KEY = "repopilot-sidebar-collapsed"
 
@@ -36,21 +39,43 @@ function AppHeader({
   const params = useParams()
   const projectId = params.projectId as string | undefined
 
+  const [apiProjectName, setApiProjectName] = React.useState<string | null>(null)
+  React.useEffect(() => {
+    if (!projectId) {
+      setApiProjectName(null)
+      return
+    }
+    const b = apiBase()
+    if (!b) {
+      setApiProjectName(null)
+      return
+    }
+    let cancelled = false
+    fetch(`${b}/projects/${projectId}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j: { data?: { name?: string } } | null) => {
+        if (!cancelled && j?.data?.name) setApiProjectName(j.data.name)
+      })
+      .catch(() => {})
+    return () => {
+      cancelled = true
+    }
+  }, [projectId])
+
   const title = React.useMemo(() => {
     if (pathname === "/projects" || pathname === "/") return "Projects"
     if (pathname === "/queue") return "Queue"
     if (pathname === "/agents") return "Agents"
     if (pathname === "/settings") return "Settings"
     if (projectId) {
-      const p = getProject(projectId)
-      const name = p?.name ?? "Project"
+      const name = apiProjectName ?? getProject(projectId)?.name ?? "Project"
       if (pathname.endsWith("/automation")) return `${name} · Automation`
       if (pathname.endsWith("/board")) return `${name} · Board`
       if (pathname.endsWith("/runs")) return `${name} · Run history`
       return `${name} · Overview`
     }
     return "RepoPilot"
-  }, [pathname, projectId])
+  }, [pathname, projectId, apiProjectName])
 
   return (
     <header className="flex h-12 shrink-0 items-center gap-2 border-b border-border bg-background/75 px-6 backdrop-blur-sm supports-[backdrop-filter]:bg-background/60">
@@ -157,8 +182,8 @@ function NavLink({
 }
 
 export function AppShell({ children }: { children: React.ReactNode }) {
-  const q = DUMMY_QUEUE
-  const badge = queueBadgeCount(q)
+  const { queue, refresh } = useQueueStream()
+  const badge = queueBadgeCount(queue)
   const pathname = usePathname()
 
   const [mobileOpen, setMobileOpen] = React.useState(false)
@@ -289,12 +314,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             Horizontal padding matches header (px-6). Route bodies should use ShellPage
             for max-width — avoids mixed mx-auto + max-w-* shifting content vs the sidebar.
           */}
-          <main className="min-h-0 flex-1 overflow-auto overscroll-contain px-6 py-6">
-            {children}
-          </main>
+          <QueueRefreshProvider refresh={refresh}>
+            <main className="min-h-0 flex-1 overflow-auto overscroll-contain px-6 py-6">
+              {children}
+            </main>
+          </QueueRefreshProvider>
         </div>
       </div>
-      <QueueStatusBar />
+      <QueueStatusBar queue={queue} onRefresh={refresh} />
     </div>
   )
 }

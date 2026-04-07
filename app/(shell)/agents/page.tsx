@@ -12,6 +12,7 @@ import {
   SettingsRowText,
 } from "@/components/design-system/settings-group"
 import { ShellPage } from "@/components/app/shell-page"
+import { apiBase } from "@/lib/api/env"
 import { DUMMY_AGENTS, type AgentRow } from "@/lib/dummy-data"
 
 function AgentRowView({
@@ -48,6 +49,33 @@ function AgentRowView({
           onClick={() => {
             setTesting(true)
             setTestResult(null)
+            const b = apiBase()
+            if (b) {
+              fetch(`${b}/agents/${agent.id}/test`, { method: "POST" })
+                .then((r) => r.json())
+                .then(
+                  (j: { success?: boolean; version?: string; error?: string }) => {
+                    setTesting(false)
+                    if (j.success) {
+                      setTestResult("ok")
+                      toast.success("Agent OK", {
+                        description: j.version ?? "OK",
+                      })
+                    } else {
+                      setTestResult("err")
+                      toast.error("Test failed", {
+                        description: j.error ?? "Unknown error",
+                      })
+                    }
+                  }
+                )
+                .catch(() => {
+                  setTesting(false)
+                  setTestResult("err")
+                  toast.error("Test failed", { description: "Network error" })
+                })
+              return
+            }
             window.setTimeout(() => {
               setTesting(false)
               const ok = Math.random() > 0.2
@@ -79,6 +107,17 @@ function AgentRowView({
 export default function AgentsPage() {
   const [agents, setAgents] = React.useState(DUMMY_AGENTS)
 
+  React.useEffect(() => {
+    const b = apiBase()
+    if (!b) return
+    fetch(`${b}/agents`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j: { data?: AgentRow[] } | null) => {
+        if (j?.data?.length) setAgents(j.data)
+      })
+      .catch(() => {})
+  }, [])
+
   return (
     <ShellPage maxWidth="standard">
       <p className="mb-6 text-[13px] text-muted-foreground">
@@ -89,11 +128,19 @@ export default function AgentsPage() {
           <AgentRowView
             key={a.id}
             agent={a}
-            onToggle={(id, enabled) =>
+            onToggle={(id, enabled) => {
               setAgents((prev) =>
                 prev.map((x) => (x.id === id ? { ...x, enabled } : x))
               )
-            }
+              const b = apiBase()
+              if (b) {
+                void fetch(`${b}/agents/${id}`, {
+                  method: "PUT",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ enabled }),
+                })
+              }
+            }}
           />
         ))}
       </SettingsGroup>

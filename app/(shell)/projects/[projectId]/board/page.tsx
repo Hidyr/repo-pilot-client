@@ -1,5 +1,5 @@
-import { KanbanBoard } from "@/components/projects/kanban-board"
-import { featuresForProject, getProject } from "@/lib/dummy-data"
+import { BoardLive } from "@/components/projects/board-live"
+import { getFeaturesForProject, getProjectById } from "@/lib/api/server-data"
 import { notFound } from "next/navigation"
 
 export default async function ProjectBoardPage({
@@ -8,9 +8,9 @@ export default async function ProjectBoardPage({
   params: Promise<{ projectId: string }>
 }) {
   const { projectId } = await params
-  if (!getProject(projectId)) notFound()
+  if (!(await getProjectById(projectId))) notFound()
 
-  const features = featuresForProject(projectId)
+  const features = await getFeaturesForProject(projectId)
 
   return (
     <>
@@ -23,7 +23,7 @@ export default async function ProjectBoardPage({
           <span className="font-mono text-foreground">my-app</span> (proj-1).
         </p>
       ) : (
-        <KanbanBoard features={features} />
+        <BoardLive projectId={projectId} initialFeatures={features} />
       )}
     </>
   )

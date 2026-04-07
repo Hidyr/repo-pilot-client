@@ -75,6 +75,8 @@ export type QueueJob = {
   projectName: string
   featureTitle: string
   state: QueueJobState
+  /** Present when data comes from GET /api/queue */
+  featureId?: string
 }
 
 export type QueueSnapshot = {

@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useRouter } from "next/navigation"
 import { Clock, X } from "lucide-react"
 import { toast } from "sonner"
 
@@ -17,14 +18,15 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { DUMMY_QUEUE, type QueueJob } from "@/lib/dummy-data"
+import { apiBase } from "@/lib/api/env"
+import type { QueueJob, QueueSnapshot } from "@/lib/dummy-data"
 
 function JobChip({
   job,
   onCancel,
 }: {
   job: QueueJob
-  onCancel?: (id: string) => void
+  onCancel?: (id: string) => void | Promise<void>
 }) {
   const label = `${job.projectName} — ${job.featureTitle}`
   const active = job.state === "active"
@@ -67,15 +69,16 @@ function JobChip({
             <AlertDialogHeader>
               <AlertDialogTitle>Remove from queue?</AlertDialogTitle>
               <AlertDialogDescription>
-                Demo only — no API call. Job id: {job.id}
+                Remove this waiting job from the queue. Job id: {job.id}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Back</AlertDialogCancel>
               <AlertDialogAction
                 onClick={() => {
-                  onCancel(job.id)
-                  toast.message("Cancelled (demo)")
+                  void (async () => {
+                    if (onCancel) await onCancel(job.id)
+                  })()
                 }}
               >
                 Cancel job
@@ -88,10 +91,38 @@ function JobChip({
   )
 }
 
-export function QueueStatusBar() {
-  const q = DUMMY_QUEUE
+export function QueueStatusBar({
+  queue,
+  onRefresh,
+}: {
+  queue: QueueSnapshot
+  onRefresh?: () => Promise<void>
+}) {
+  const router = useRouter()
+  const q = queue
   const [expanded, setExpanded] = React.useState(true)
   const hasJobs = q.jobs.length > 0
+
+  const cancelWaitingJob = React.useCallback(
+    async (jobId: string) => {
+      const b = apiBase()
+      if (!b) {
+        toast.message("Queue API not configured")
+        return
+      }
+      const r = await fetch(`${b}/queue/${jobId}`, { method: "DELETE" })
+      if (!r.ok) {
+        toast.error("Could not cancel job", {
+          description: r.status === 409 ? "Job is already active" : r.statusText,
+        })
+        return
+      }
+      await onRefresh?.()
+      router.refresh()
+      toast.message("Job removed from queue")
+    },
+    [onRefresh, router]
+  )
 
   const idle =
     !hasJobs || (q.activeCount === 0 && q.waitingCount === 0)
@@ -130,11 +161,7 @@ export function QueueStatusBar() {
                 key={job.id}
                 job={job}
                 onCancel={
-                  job.state === "waiting"
-                    ? () => {
-                        /* demo: parent could filter state */
-                      }
-                    : undefined
+                  job.state === "waiting" ? () => cancelWaitingJob(job.id) : undefined
                 }
               />
             ))}

@@ -14,6 +14,17 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { ShellPage } from "@/components/app/shell-page"
 import { Label } from "@/components/ui/label"
+import { apiBase } from "@/lib/api/env"
+
+async function putSettings(body: Record<string, unknown>) {
+  const b = apiBase()
+  if (!b) return
+  await fetch(`${b}/settings`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  })
+}
 
 export default function SettingsPage() {
   const { resolvedTheme, setTheme } = useTheme()
@@ -26,6 +37,21 @@ export default function SettingsPage() {
   const [maxRuns, setMaxRuns] = React.useState<string[]>(["4"])
   const [minimizeTray, setMinimizeTray] = React.useState(true)
   const [autostart, setAutostart] = React.useState(false)
+
+  React.useEffect(() => {
+    const b = apiBase()
+    if (!b) return
+    fetch(`${b}/settings`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j: { data?: Record<string, string> } | null) => {
+        const d = j?.data
+        if (!d) return
+        if (d.max_concurrent_runs) setMaxRuns([d.max_concurrent_runs])
+        setMinimizeTray(d.minimize_to_tray === "true")
+        setAutostart(d.autostart === "true")
+      })
+      .catch(() => {})
+  }, [])
 
   return (
     <ShellPage maxWidth="standard" className="space-y-8">
@@ -43,7 +69,10 @@ export default function SettingsPage() {
               onValueChange={(next) => {
                 if (next.length > 0) {
                   const v = next[next.length - 1]
-                  if (v === "light" || v === "dark") setTheme(v)
+                  if (v === "light" || v === "dark") {
+                    setTheme(v)
+                    void putSettings({ theme: v })
+                  }
                 }
               }}
             >
@@ -63,7 +92,11 @@ export default function SettingsPage() {
               spacing={0}
               value={maxRuns}
               onValueChange={(next) => {
-                if (next.length > 0) setMaxRuns([next[next.length - 1]!])
+                if (next.length > 0) {
+                  const v = next[next.length - 1]!
+                  setMaxRuns([v])
+                  void putSettings({ max_concurrent_runs: Number(v) })
+                }
               }}
               className="shrink-0"
             >
@@ -89,7 +122,11 @@ export default function SettingsPage() {
             />
             <Checkbox
               checked={minimizeTray}
-              onCheckedChange={(c) => setMinimizeTray(c === true)}
+              onCheckedChange={(c) => {
+                const v = c === true
+                setMinimizeTray(v)
+                void putSettings({ minimize_to_tray: v })
+              }}
             />
           </SettingsRow>
           <SettingsRow className="items-start">
@@ -99,7 +136,11 @@ export default function SettingsPage() {
             />
             <Checkbox
               checked={autostart}
-              onCheckedChange={(c) => setAutostart(c === true)}
+              onCheckedChange={(c) => {
+                const v = c === true
+                setAutostart(v)
+                void putSettings({ autostart: v })
+              }}
             />
           </SettingsRow>
         </SettingsGroup>

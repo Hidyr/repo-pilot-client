@@ -1,5 +1,5 @@
 import { RunsTable } from "@/components/projects/runs-table"
-import { getProject, runsForProject } from "@/lib/dummy-data"
+import { getProjectById, getRunsForProject } from "@/lib/api/server-data"
 import { notFound } from "next/navigation"
 
 export default async function ProjectRunsPage({
@@ -8,9 +8,9 @@ export default async function ProjectRunsPage({
   params: Promise<{ projectId: string }>
 }) {
   const { projectId } = await params
-  if (!getProject(projectId)) notFound()
+  if (!(await getProjectById(projectId))) notFound()
 
-  const runs = runsForProject(projectId)
+  const runs = await getRunsForProject(projectId)
 
   return (
     <>

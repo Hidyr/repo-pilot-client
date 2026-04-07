@@ -1,11 +1,12 @@
 import { ShellPage } from "@/components/app/shell-page"
 import { ProjectsBrowser } from "@/components/projects/projects-browser"
-import { DUMMY_PROJECTS } from "@/lib/dummy-data"
+import { getProjectsList } from "@/lib/api/server-data"
 
-export default function ProjectsPage() {
+export default async function ProjectsPage() {
+  const projects = await getProjectsList()
   return (
     <ShellPage maxWidth="wide">
-      <ProjectsBrowser projects={DUMMY_PROJECTS} />
+      <ProjectsBrowser projects={projects} />
     </ShellPage>
   )
 }

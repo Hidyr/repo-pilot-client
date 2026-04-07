@@ -1,5 +1,5 @@
 import { ScheduleConfigPanel } from "@/components/projects/schedule-config-panel"
-import { getProject } from "@/lib/dummy-data"
+import { getProjectById } from "@/lib/api/server-data"
 import { notFound } from "next/navigation"
 
 export default async function ProjectAutomationPage({
@@ -8,7 +8,7 @@ export default async function ProjectAutomationPage({
   params: Promise<{ projectId: string }>
 }) {
   const { projectId } = await params
-  const project = getProject(projectId)
+  const project = await getProjectById(projectId)
   if (!project) notFound()
 
   return (
