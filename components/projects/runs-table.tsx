@@ -91,7 +91,9 @@ export function RunsTable({ runs }: { runs: RunRow[] }) {
                 ? "success"
                 : run.status === "failed"
                   ? "failed"
-                  : "skipped"
+                  : run.status === "running"
+                    ? "running"
+                    : "skipped"
             return (
               <React.Fragment key={run.id}>
                 <TableRow className="border-border">

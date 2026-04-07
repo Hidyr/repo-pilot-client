@@ -10,12 +10,18 @@ function mapFeatureRow(row: Record<string, unknown>): FeatureCard {
     title: String(row.title ?? ""),
     description: String(row.description ?? ""),
     status: row.status as FeatureStatus,
+    ...(typeof row.userPrompt === "string" ? { userPrompt: row.userPrompt } : {}),
   }
 }
 
 export async function putFeature(
   id: string,
-  body: Partial<{ status: FeatureStatus; title: string; description: string }>
+  body: Partial<{
+    status: FeatureStatus
+    title: string
+    description: string
+    userPrompt: string
+  }>
 ): Promise<FeatureCard | null> {
   const b = apiBase()
   if (!b) return null

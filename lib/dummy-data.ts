@@ -141,6 +141,8 @@ export type FeatureCard = {
   title: string
   description: string
   status: FeatureStatus
+  /** Extra instructions merged into the agent prompt (user-editable). */
+  userPrompt?: string
 }
 
 export const DUMMY_FEATURES: FeatureCard[] = [
@@ -195,7 +197,8 @@ export function featuresForProject(projectId: string): FeatureCard[] {
 export type RunRow = {
   id: string
   projectId: string
-  status: "success" | "failed" | "skipped"
+  featureId?: string
+  status: "running" | "success" | "failed" | "skipped"
   featureTitle: string
   startedAt: string
   durationSec: number

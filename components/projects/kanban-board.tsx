@@ -1,6 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import {
   DndContext,
@@ -160,10 +161,26 @@ function FeatureColumn({
   )
 }
 
-function KanbanCard({ feature }: { feature: Feature }) {
+function KanbanCard({ feature, projectId }: { feature: Feature; projectId?: string }) {
   const queued = feature.status === "queued"
   const running = feature.status === "in_progress"
   const failed = feature.status === "failed"
+
+  const body =
+    projectId != null && projectId !== "" ? (
+      <Link
+        href={`/projects/${projectId}/features/${feature.id}`}
+        className="block rounded-sm outline-none hover:opacity-90 focus-visible:ring-2 focus-visible:ring-ring/50"
+      >
+        <p className="font-medium text-foreground">{feature.title}</p>
+        <p className="mt-1 line-clamp-2 text-muted-foreground">{feature.description}</p>
+      </Link>
+    ) : (
+      <>
+        <p className="font-medium text-foreground">{feature.title}</p>
+        <p className="mt-1 line-clamp-2 text-muted-foreground">{feature.description}</p>
+      </>
+    )
 
   return (
     <div
@@ -190,17 +207,18 @@ function KanbanCard({ feature }: { feature: Feature }) {
       {failed ? (
         <div className="mb-2 text-[10px] text-destructive">Failed — click to retry</div>
       ) : null}
-      <p className="font-medium text-foreground">{feature.title}</p>
-      <p className="mt-1 line-clamp-2 text-muted-foreground">{feature.description}</p>
+      {body}
     </div>
   )
 }
 
 function SortableKanbanCard({
   feature,
+  projectId: cardProjectId,
   onCancelRun,
 }: {
   feature: Feature
+  projectId?: string
   onCancelRun?: (feature: Feature) => void | Promise<void>
 }) {
   const locked = feature.status === "queued" || feature.status === "in_progress"
@@ -263,7 +281,7 @@ function SortableKanbanCard({
           {...(locked ? {} : { ...attributes, ...listeners })}
           className={cn(locked ? "cursor-default" : "cursor-grab active:cursor-grabbing")}
         >
-          <KanbanCard feature={feature} />
+          <KanbanCard feature={feature} projectId={cardProjectId} />
         </div>
       </div>
     </div>
@@ -459,6 +477,7 @@ export function KanbanBoard({
                   <SortableKanbanCard
                     key={id}
                     feature={f}
+                    projectId={projectId}
                     onCancelRun={
                       projectId && apiBase() ? cancelFeatureRun : undefined
                     }
@@ -472,7 +491,7 @@ export function KanbanBoard({
       <DragOverlay dropAnimation={null}>
         {activeFeature ? (
           <div className="cursor-grabbing opacity-90 shadow-lg">
-            <KanbanCard feature={activeFeature} />
+            <KanbanCard feature={activeFeature} projectId={projectId} />
           </div>
         ) : null}
       </DragOverlay>

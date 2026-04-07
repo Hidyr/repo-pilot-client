@@ -52,6 +52,7 @@ function mapFeatureRow(row: Record<string, unknown>): FeatureCard {
     title: String(row.title ?? ""),
     description: String(row.description ?? ""),
     status: row.status as FeatureStatus,
+    ...(typeof row.userPrompt === "string" ? { userPrompt: row.userPrompt } : {}),
   }
 }
 
@@ -61,6 +62,21 @@ export async function getFeaturesForProject(projectId: string): Promise<FeatureC
   )
   if (j?.data) return j.data.map((row) => mapFeatureRow(row))
   return dummyFeaturesForProject(projectId)
+}
+
+export async function getFeatureForProject(
+  projectId: string,
+  featureId: string
+): Promise<FeatureCard | undefined> {
+  const j = await fetchJson<{ data: Record<string, unknown> }>(
+    `/features/${encodeURIComponent(featureId)}`
+  )
+  if (j?.data) {
+    const f = mapFeatureRow(j.data)
+    if (f.projectId !== projectId) return undefined
+    return f
+  }
+  return dummyFeaturesForProject(projectId).find((f) => f.id === featureId)
 }
 
 export async function getRunsForProject(
@@ -73,6 +89,18 @@ export async function getRunsForProject(
   )
   if (j?.data) return j.data
   return dummyRunsForProject(projectId)
+}
+
+export async function getRunsForFeature(
+  projectId: string,
+  featureId: string,
+  limit = 5
+): Promise<RunRow[]> {
+  const j = await fetchJson<{ data: RunRow[] }>(
+    `/runs?projectId=${encodeURIComponent(projectId)}&featureId=${encodeURIComponent(featureId)}&page=1&limit=${limit}`
+  )
+  if (j?.data) return j.data
+  return []
 }
 
 export async function getQueueSnapshot(): Promise<QueueSnapshot> {
