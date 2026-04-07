@@ -15,15 +15,28 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { ShellPage } from "@/components/app/shell-page"
 import { Label } from "@/components/ui/label"
 import { apiBase } from "@/lib/api/env"
+import { useAppQueue } from "@/contexts/queue-refresh-context"
 
-async function putSettings(body: Record<string, unknown>) {
+async function putSettings(
+  body: Record<string, unknown>
+): Promise<{ ok: boolean; status: number }> {
   const b = apiBase()
-  if (!b) return
-  await fetch(`${b}/settings`, {
+  if (!b) return { ok: false, status: 0 }
+  const res = await fetch(`${b}/settings`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   })
+  return { ok: res.ok, status: res.status }
+}
+
+type SettingsPayload = {
+  theme?: string
+  autostart?: string
+  minimize_to_tray?: string
+  max_concurrent_runs?: string
+  max_concurrent_runs_editable?: string
+  max_concurrent_runs_lock_reason?: string
 }
 
 export default function SettingsPage() {
@@ -31,27 +44,48 @@ export default function SettingsPage() {
   const [mounted, setMounted] = React.useState(false)
   React.useEffect(() => setMounted(true), [])
 
+  const appQueue = useAppQueue()
+  const activeQueueJobs = appQueue?.queue.activeCount ?? 0
+
   const themeSegment =
     mounted && resolvedTheme === "light" ? "light" : "dark"
 
   const [maxRuns, setMaxRuns] = React.useState<string[]>(["4"])
   const [minimizeTray, setMinimizeTray] = React.useState(true)
   const [autostart, setAutostart] = React.useState(false)
+  const [maxRunsEditable, setMaxRunsEditable] = React.useState(true)
+  const [maxRunsLockReason, setMaxRunsLockReason] = React.useState("")
 
-  React.useEffect(() => {
+  const loadSettings = React.useCallback(() => {
     const b = apiBase()
     if (!b) return
     fetch(`${b}/settings`)
       .then((r) => (r.ok ? r.json() : null))
-      .then((j: { data?: Record<string, string> } | null) => {
+      .then((j: { data?: SettingsPayload } | null) => {
         const d = j?.data
         if (!d) return
         if (d.max_concurrent_runs) setMaxRuns([d.max_concurrent_runs])
         setMinimizeTray(d.minimize_to_tray === "true")
         setAutostart(d.autostart === "true")
+        setMaxRunsEditable(d.max_concurrent_runs_editable !== "false")
+        setMaxRunsLockReason(d.max_concurrent_runs_lock_reason ?? "")
       })
       .catch(() => {})
   }, [])
+
+  React.useEffect(() => {
+    loadSettings()
+  }, [loadSettings])
+
+  React.useEffect(() => {
+    loadSettings()
+  }, [activeQueueJobs, loadSettings])
+
+  React.useEffect(() => {
+    const onFocus = () => loadSettings()
+    window.addEventListener("focus", onFocus)
+    return () => window.removeEventListener("focus", onFocus)
+  }, [loadSettings])
 
   return (
     <ShellPage maxWidth="standard" className="space-y-8">
@@ -84,19 +118,38 @@ export default function SettingsPage() {
             <div className="min-w-0 flex-1">
               <Label className="text-[13px] text-foreground">Max concurrent runs</Label>
               <p className="mt-0.5 text-[11px] text-muted-foreground">
-                Segmented control — only one value at a time (1–4).
+                {maxRunsEditable
+                  ? "How many features can run at once (1–4)."
+                  : maxRunsLockReason ||
+                    "You cannot change this while runs are active."}
               </p>
             </div>
             <ToggleGroup
               variant="outline"
               spacing={0}
               value={maxRuns}
+              disabled={!maxRunsEditable}
               onValueChange={(next) => {
-                if (next.length > 0) {
-                  const v = next[next.length - 1]!
-                  setMaxRuns([v])
-                  void putSettings({ max_concurrent_runs: Number(v) })
-                }
+                if (!maxRunsEditable || next.length === 0) return
+                const v = next[next.length - 1]!
+                const prev = maxRuns[0] ?? "4"
+                setMaxRuns([v])
+                void (async () => {
+                  const { ok, status } = await putSettings({
+                    max_concurrent_runs: Number(v),
+                  })
+                  if (!ok) {
+                    setMaxRuns([prev])
+                    if (status === 409) {
+                      toast.error("Cannot change max concurrent runs", {
+                        description:
+                          "Wait until no features are in progress and no queue jobs are active.",
+                      })
+                    } else {
+                      toast.error("Could not update setting")
+                    }
+                  }
+                })()
               }}
               className="shrink-0"
             >
