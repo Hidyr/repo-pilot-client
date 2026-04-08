@@ -5,7 +5,6 @@ import { ChevronUp, Loader2, Terminal } from "lucide-react"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -250,21 +249,39 @@ function AgentRow({
       <div className="flex w-full shrink-0 flex-col gap-2 sm:w-auto sm:items-end">
         <div className="flex flex-wrap items-center justify-end gap-2">
           <div className="flex items-center gap-2">
-            <Checkbox
+            <input
+              type="radio"
+              name="default-agent"
               checked={agent.enabled}
               disabled={testRunningGlobally || (!agent.enabled && !canEnable)}
-              onCheckedChange={(v) => onToggleEnabled(agent.id, v === true)}
+              onChange={(e) => {
+                if (e.currentTarget.checked) onToggleEnabled(agent.id, true)
+              }}
+              className={cn(
+                "size-4 shrink-0 rounded-full border border-input bg-background",
+                "text-primary accent-primary",
+                "disabled:cursor-not-allowed disabled:opacity-50"
+              )}
+              aria-label={agent.enabled ? "Default agent" : "Set as default agent"}
             />
-            <span className="text-[12px] text-muted-foreground">Active</span>
+            <span className="text-[12px] text-muted-foreground">
+              {agent.enabled ? "Default" : "Set default"}
+            </span>
           </div>
           <Button
             variant="outline"
             size="sm"
-            disabled={testRunningGlobally}
+            disabled={testRunningGlobally || agent.lastTestOk}
             onClick={() => onTest(agent)}
-            aria-label="Test agent"
+            aria-label={agent.lastTestOk ? "Agent activated" : "Activate agent"}
           >
-            {thisAgentStreaming ? <Loader2 className="size-3.5 animate-spin" /> : "Test agent"}
+            {thisAgentStreaming ? (
+              <Loader2 className="size-3.5 animate-spin" />
+            ) : agent.lastTestOk ? (
+              "Activated"
+            ) : (
+              "Activate agent"
+            )}
           </Button>
 
           <AlertDialog>
@@ -319,6 +336,7 @@ export function AgentsPanel() {
   const segId = React.useRef(0)
   const termHandleRef = React.useRef<ReadonlyTerminalHandle | null>(null)
   const abortRef = React.useRef<AbortController | null>(null)
+  const agentsRef = React.useRef<Agent[]>([])
   const appQueue = useAppQueue()
   const waitingCount = appQueue?.queue.waitingCount ?? 0
   const activeSlots = appQueue?.queue.activeSlots ?? 0
@@ -341,6 +359,10 @@ export function AgentsPanel() {
   React.useEffect(() => {
     void refresh()
   }, [refresh])
+
+  React.useEffect(() => {
+    agentsRef.current = agents
+  }, [agents])
 
   React.useEffect(() => {
     return () => {
@@ -391,7 +413,7 @@ export function AgentsPanel() {
       abortRef.current = ac
       segId.current = 0
       setSegments([])
-      setTerminalTitle(`Test output — ${agent.name}`)
+      setTerminalTitle(`Activation output — ${agent.name}`)
       setTerminalOpen(true)
       setTerminalCollapsed(false)
       setTerminalRunning(true)
@@ -425,14 +447,19 @@ export function AgentsPanel() {
         onChunk: pushChunk,
         onDone: (r) => {
           if (r.ok) {
-            toast.success("Agent OK", { description: r.message })
+            toast.success("Agent activated", { description: r.message })
+            // If no default agent exists yet, make the first successfully activated agent the default.
+            const hasDefault = agentsRef.current.some((a) => a.enabled)
+            if (!hasDefault) {
+              onToggleEnabled(agent.id, true)
+            }
           } else {
-            toast.error("Test failed", { description: r.error })
+            toast.error("Activation failed", { description: r.error })
           }
           void refresh()
         },
         onRequestError: (msg) => {
-          toast.error("Test failed", { description: msg })
+          toast.error("Activation failed", { description: msg })
         },
       }).finally(() => {
         if (raf) {
@@ -445,7 +472,7 @@ export function AgentsPanel() {
         setStreamingAgentId(null)
       })
     },
-    [refresh]
+    [onToggleEnabled, refresh]
   )
 
   return (
@@ -458,7 +485,7 @@ export function AgentsPanel() {
         <div className="mb-6 space-y-2">
           <p className="text-[13px] text-muted-foreground">
             Choose one built-in coding agent on the machine that runs the RepoPilot API. Install and log
-            in to the CLI first, then enable it and run <span className="font-medium text-foreground">Test agent</span>{" "}
+            in to the CLI first, then click <span className="font-medium text-foreground">Activate agent</span>{" "}
             to run <span className="font-mono text-[12px]">--version</span>. Live stdout/stderr appear in the terminal at the bottom.
           </p>
           <p className="text-[12px] text-muted-foreground">
