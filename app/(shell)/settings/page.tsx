@@ -18,6 +18,18 @@ import { Input } from "@/components/ui/input"
 import { apiBase } from "@/lib/api/env"
 import { useAppQueue } from "@/contexts/queue-refresh-context"
 import { pickFolder } from "@/lib/os/pick-folder"
+import { openDbFolder } from "@/lib/os/open-db-folder"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 async function putSettings(
   body: Record<string, unknown>
@@ -264,14 +276,58 @@ export default function SettingsPage() {
               type="button"
               variant="outline"
               size="sm"
-              onClick={() =>
-                toast.message("Not available yet", {
-                  description: "Opening the DB folder requires the Tauri desktop shell.",
-                })
-              }
+              onClick={() => void openDbFolder()}
             >
               Open DB folder
             </Button>
+          </SettingsRow>
+          <SettingsRow className="items-start">
+            <AlertDialog>
+              <AlertDialogTrigger
+                render={
+                  <Button type="button" variant="destructive" size="sm">
+                    Reset database
+                  </Button>
+                }
+              />
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Reset database?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will delete all projects, features, runs, and queue jobs. Schedules will be
+                    removed, and agents will be reset to “not tested”.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => {
+                      void (async () => {
+                        const b = apiBase()
+                        if (!b) {
+                          toast.error("Backend not configured")
+                          return
+                        }
+                        const res = await fetch(`${b}/settings/reset`, { method: "POST" })
+                        if (!res.ok) {
+                          const j = (await res.json().catch(() => null)) as
+                            | { error?: { message?: string } }
+                            | null
+                          toast.error("Reset failed", {
+                            description: j?.error?.message ?? res.statusText,
+                          })
+                          return
+                        }
+                        toast.success("Database reset")
+                        window.location.href = "/projects"
+                      })()
+                    }}
+                  >
+                    Reset
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </SettingsRow>
         </SettingsGroup>
       </section>

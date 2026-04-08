@@ -23,11 +23,13 @@ import {
   SettingsRow,
   SettingsRowText,
 } from "@/components/design-system/settings-group"
-import type { Project } from "@/lib/api/types"
+import type { Agent, Project } from "@/lib/api/types"
 import { apiBase } from "@/lib/api/env"
 import { toast } from "sonner"
+import Link from "next/link"
 
 type ScheduleDto = {
+  agentId?: string | null
   enabled: boolean
   intervalType: "fixed" | "random"
   runsPerDay: number
@@ -47,6 +49,8 @@ function padTimes(times: string[], n: number): string[] {
 
 export function ScheduleConfigPanel({ project }: { project: Project }) {
   const [loaded, setLoaded] = React.useState(false)
+  const [agents, setAgents] = React.useState<Agent[]>([])
+  const [agentId, setAgentId] = React.useState<string | null>(null)
   const [auto, setAuto] = React.useState(true)
   const [intervalType, setIntervalType] = React.useState<"fixed" | "random">("fixed")
   const [runsPerDay, setRunsPerDay] = React.useState(2)
@@ -64,6 +68,7 @@ export function ScheduleConfigPanel({ project }: { project: Project }) {
     const times =
       intervalType === "fixed" ? padTimes(executionTimes, runsPerDay) : []
     return {
+      agentId,
       enabled: auto,
       intervalType,
       runsPerDay,
@@ -74,7 +79,7 @@ export function ScheduleConfigPanel({ project }: { project: Project }) {
       gitAutoPush: push,
       gitAutoMerge: merge,
     }
-  }, [auto, intervalType, runsPerDay, featuresPerRun, executionTimes, pull, commit, push, merge])
+  }, [agentId, auto, intervalType, runsPerDay, featuresPerRun, executionTimes, pull, commit, push, merge])
 
   const saveSchedule = React.useCallback(
     async (payload: ScheduleDto, opts?: { notifyError?: boolean }) => {
@@ -107,11 +112,22 @@ export function ScheduleConfigPanel({ project }: { project: Project }) {
     }
     ;(async () => {
       try {
+        // Load tested agents for selection.
+        const agentsRes = await fetch(`${b}/agents`)
+        if (agentsRes.ok) {
+          const aj = (await agentsRes.json()) as { data?: Agent[] }
+          const list = Array.isArray(aj.data) ? aj.data : []
+          setAgents(list.filter((a) => a.lastTestOk))
+        } else {
+          setAgents([])
+        }
+
         const res = await fetch(`${b}/schedules/${project.id}`)
         if (!res.ok || cancelled) return
         const j = (await res.json()) as { data?: ScheduleDto }
         const d = j.data
         if (!d || cancelled) return
+        setAgentId(d.agentId ? String(d.agentId) : null)
         setAuto(d.enabled ?? false)
         setIntervalType(d.intervalType === "random" ? "random" : "fixed")
         const rpd = Math.min(4, Math.max(1, Number(d.runsPerDay ?? 1)))
@@ -144,6 +160,7 @@ export function ScheduleConfigPanel({ project }: { project: Project }) {
     return () => window.clearTimeout(t)
   }, [
     loaded,
+    agentId,
     auto,
     intervalType,
     runsPerDay,
@@ -182,6 +199,48 @@ export function ScheduleConfigPanel({ project }: { project: Project }) {
             checked={auto}
             onCheckedChange={(c) => setAuto(c === true)}
           />
+        </SettingsRow>
+        <SettingsRow className="flex-wrap">
+          <SettingsRowText
+            title="Agent"
+            description="Agent used for automated runs in this project"
+          />
+          <div className="flex flex-wrap items-center gap-2">
+            <Select
+              value={agents.length === 0 ? "none" : agentId ?? "default"}
+              onValueChange={(v) => {
+                if (v === "none") return
+                if (v === "default") setAgentId(null)
+                else setAgentId(v)
+              }}
+              disabled={agents.length === 0}
+            >
+              <SelectTrigger size="sm" className="w-[240px]">
+                <SelectValue placeholder="Select agent" />
+              </SelectTrigger>
+              <SelectContent>
+                {agents.length > 0 ? (
+                  <SelectItem value="default">Default enabled agent</SelectItem>
+                ) : (
+                  <SelectItem value="none">No agent set up</SelectItem>
+                )}
+                {agents.map((a) => (
+                  <SelectItem key={a.id} value={a.id}>
+                    {a.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {agents.length === 0 ? (
+              <Link
+                href="/agents"
+                className="inline-flex h-8 items-center justify-center rounded-lg border border-border bg-background px-2.5 text-[0.8rem] text-foreground transition-colors hover:bg-muted"
+              >
+                Set up agent
+              </Link>
+            ) : null}
+          </div>
         </SettingsRow>
       </SettingsGroup>
       <div className="border-t border-border px-4 py-3">

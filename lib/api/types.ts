@@ -68,6 +68,7 @@ export type QueueSnapshot = {
 
 export type Schedule = {
   enabled: boolean
+  agentId?: string | null
   intervalType: "fixed" | "random"
   runsPerDay: number
   featuresPerRun: number
@@ -78,14 +79,16 @@ export type Schedule = {
   gitAutoMerge: boolean
 }
 
-export type AgentType = "cursor" | "claude-code" | "custom"
+export type AgentPreset = "cursor" | "claude_code" | "codex"
 
 export type Agent = {
   id: string
   name: string
-  type: AgentType
-  commandPath: string
+  preset: AgentPreset
   enabled: boolean
+  lastTestOk: boolean
+  lastTestedAt: string | null
+  lastTestOutput: string | null
   createdAt: string
   updatedAt: string
 }
@@ -98,4 +101,3 @@ export type Settings = {
   max_concurrent_runs_editable: string
   max_concurrent_runs_lock_reason: string
 }
-
