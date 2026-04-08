@@ -52,6 +52,7 @@ export type QueueJob = {
   projectId: string
   projectName: string
   featureId: string
+  runId: string | null
   featureTitle: string
   status: "waiting" | "active"
   priority: number

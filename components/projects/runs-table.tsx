@@ -61,6 +61,24 @@ function LogViewer({ lines }: { lines: string[] }) {
 
 export function RunsTable({ runs }: { runs: Run[] }) {
   const [openId, setOpenId] = React.useState<string | null>(runs[0]?.id ?? null)
+  const focusRunId =
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search).get("runId")
+      : null
+
+  React.useEffect(() => {
+    if (!focusRunId) return
+    const exists = runs.some((r) => r.id === focusRunId)
+    if (!exists) return
+    setOpenId(focusRunId)
+    // Scroll after render
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const el = document.getElementById(`run-${focusRunId}`)
+        el?.scrollIntoView({ block: "center", behavior: "smooth" })
+      })
+    })
+  }, [focusRunId, runs])
 
   if (runs.length === 0) {
     return (
@@ -104,7 +122,13 @@ export function RunsTable({ runs }: { runs: Run[] }) {
                 .filter(Boolean) ?? []
             return (
               <React.Fragment key={run.id}>
-                <TableRow className="border-border">
+                <TableRow
+                  id={`run-${run.id}`}
+                  className={cn(
+                    "border-border",
+                    run.id === focusRunId ? "bg-muted/30" : ""
+                  )}
+                >
                   <TableCell className="py-2">
                     <button
                       type="button"

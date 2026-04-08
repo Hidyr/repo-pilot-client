@@ -10,6 +10,7 @@ export type QueueApiData = {
     projectId: string
     projectName: string
     featureId: string
+    runId: string | null
     featureTitle: string
     status: "waiting" | "active"
     priority: number
@@ -28,6 +29,7 @@ export function mapQueueApiToSnapshot(d: QueueApiData): QueueSnapshot {
       projectId: j.projectId,
       projectName: j.projectName,
       featureId: j.featureId,
+      runId: j.runId ?? null,
       featureTitle: j.featureTitle,
       status: j.status,
       priority: j.priority,
