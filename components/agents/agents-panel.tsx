@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { ChevronUp, Code, Loader2, Sparkles, Terminal, MousePointer2 } from "lucide-react"
+import { ChevronUp, Loader2, Terminal } from "lucide-react"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
@@ -29,6 +29,7 @@ import { cn } from "@/lib/utils"
 import { deactivateAgent, listAgents, testAgentStream, updateAgent } from "@/lib/api/agents-client"
 import type { Agent, AgentPreset } from "@/lib/api/types"
 import { useAppQueue } from "@/contexts/queue-refresh-context"
+import { AnthropicIcon, CursorIcon, OpenAIIcon } from "./agent-brand-icons"
 
 const PRESET_HELP: Record<
   AgentPreset,
@@ -50,9 +51,9 @@ const PRESET_HELP: Record<
 }
 
 const PRESET_ICON: Record<AgentPreset, React.ComponentType<{ className?: string }>> = {
-  cursor: MousePointer2,
-  claude_code: Sparkles,
-  codex: Code,
+  cursor: CursorIcon,
+  claude_code: AnthropicIcon,
+  codex: OpenAIIcon,
 }
 
 type LogSegment = {
