@@ -304,6 +304,8 @@ export function ScheduleConfigPanel({ project }: { project: Project }) {
               {Array.from({ length: runsPerDay }, (_, i) => (
                 <Input
                   key={i}
+                  type="time"
+                  step={60}
                   className="h-8 w-24 font-mono text-xs"
                   value={executionTimes[i] ?? "09:00"}
                   onChange={(e) => setTimeAt(i, e.target.value)}
