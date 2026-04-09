@@ -24,21 +24,9 @@ import { Textarea } from "@/components/ui/textarea"
 import { apiBase } from "@/lib/api/env"
 import { deleteFeature, putFeature } from "@/lib/api/feature-client"
 import { useQueueRefresh } from "@/contexts/queue-refresh-context"
+import { RunLogLive } from "@/components/projects/run-log-live"
 import { cn } from "@/lib/utils"
 import type { Feature, Run } from "@/lib/api/types"
-
-function LogLine({ line }: { line: string }) {
-  const m = line.match(/^(\[[^\]]+\])(.*)$/)
-  if (!m) {
-    return <div>{line}</div>
-  }
-  return (
-    <div>
-      <span className="text-foreground/70">{m[1]}</span>
-      {m[2]}
-    </div>
-  )
-}
 
 async function fetchRunsForFeature(projectId: string, featureId: string): Promise<Run[]> {
   const b = apiBase()
@@ -80,11 +68,6 @@ export function FeatureDetailView({
   }, [initialRuns])
 
   const latest = runs[0]
-  const logLines =
-    (latest?.logs ?? "")
-      .split("\n")
-      .map((x) => x.trimEnd())
-      .filter(Boolean) ?? []
   const showLivePoll =
     feature.status === "in_progress" ||
     feature.status === "queued" ||
@@ -251,23 +234,35 @@ export function FeatureDetailView({
           ) : null}
         </div>
         <p className="text-[11px] text-muted-foreground">
-          Stdout-style log for the latest run of this feature (live refresh while running).
+          Log for the latest run; streams live while that run is queued or running.
         </p>
-        <div
-          className={cn(
-            "h-[min(420px,50vh)] overflow-auto rounded-lg border border-border",
-            "bg-[#0d0d0f] p-3 font-mono text-[11px] leading-relaxed text-neutral-300"
-          )}
-        >
-          {logLines.length === 0 ? (
+        {latest ? (
+          <RunLogLive
+            runId={latest.id}
+            initialLogs={latest.logs}
+            status={latest.status}
+            expanded={
+              latest.status === "running" ||
+              latest.status === "queued"
+            }
+            className={cn(
+              "h-[min(420px,50vh)] max-h-[min(420px,50vh)] rounded-lg border-border bg-[#0d0d0f]",
+              "text-neutral-300"
+            )}
+          />
+        ) : (
+          <div
+            className={cn(
+              "h-[min(420px,50vh)] overflow-auto rounded-lg border border-border",
+              "bg-[#0d0d0f] p-3 font-mono text-[11px] leading-relaxed text-neutral-300"
+            )}
+          >
             <p className="text-neutral-500">
               No agent output yet. Start a run from the board; logs appear here when the job is
               active.
             </p>
-          ) : (
-            logLines.map((line, i) => <LogLine key={i} line={line} />)
-          )}
-        </div>
+          </div>
+        )}
       </section>
     </div>
   )

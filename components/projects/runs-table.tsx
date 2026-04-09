@@ -13,6 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { StatusBadge } from "@/components/ui/status-badge"
+import { RunLogLive } from "@/components/projects/run-log-live"
 import type { Run } from "@/lib/api/types"
 import { cn } from "@/lib/utils"
 
@@ -29,34 +30,6 @@ function formatDuration(startedAt: string, completedAt: string | null) {
 function formatStarted(iso: string) {
   const d = new Date(iso)
   return d.toLocaleString()
-}
-
-function LogLine({ line }: { line: string }) {
-  const m = line.match(/^(\[[^\]]+\])(.*)$/)
-  if (!m) {
-    return <div>{line}</div>
-  }
-  return (
-    <div>
-      <span className="text-foreground/70">{m[1]}</span>
-      {m[2]}
-    </div>
-  )
-}
-
-function LogViewer({ lines }: { lines: string[] }) {
-  return (
-    <div
-      className={cn(
-        "max-h-[400px] overflow-auto rounded-md border border-border bg-muted/20 p-3",
-        "font-mono text-[11px] leading-relaxed text-muted-foreground"
-      )}
-    >
-      {lines.map((line, i) => (
-        <LogLine key={i} line={line} />
-      ))}
-    </div>
-  )
 }
 
 export function RunsTable({ runs }: { runs: Run[] }) {
@@ -115,11 +88,6 @@ export function RunsTable({ runs }: { runs: Run[] }) {
                   : run.status === "running"
                     ? "running"
                     : "skipped"
-            const lines =
-              (run.logs ?? "")
-                .split("\n")
-                .map((x) => x.trimEnd())
-                .filter(Boolean) ?? []
             return (
               <React.Fragment key={run.id}>
                 <TableRow
@@ -203,8 +171,18 @@ export function RunsTable({ runs }: { runs: Run[] }) {
                     <TableCell colSpan={9} className="p-3">
                       <p className="mb-2 text-[11px] font-medium text-muted-foreground">
                         Run log
+                        {run.status === "running" || run.status === "queued" ? (
+                          <span className="ml-2 font-normal text-muted-foreground/80">
+                            (live)
+                          </span>
+                        ) : null}
                       </p>
-                      <LogViewer lines={lines.length ? lines : ["(no logs)"]} />
+                      <RunLogLive
+                        runId={run.id}
+                        initialLogs={run.logs}
+                        status={run.status}
+                        expanded
+                      />
                     </TableCell>
                   </TableRow>
                 ) : null}

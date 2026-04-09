@@ -30,23 +30,10 @@ import type { Agent, AgentPreset } from "@/lib/api/types"
 import { useAppQueue } from "@/contexts/queue-refresh-context"
 import { AnthropicIcon, CursorIcon, OpenAIIcon } from "./agent-brand-icons"
 
-const PRESET_HELP: Record<
-  AgentPreset,
-  { detail: string; cli: string }
-> = {
-  cursor: {
-    detail:
-      "Checks cursor-agent --version (binary reachable). Full run behavior is tested during actual runs.",
-    cli: "cursor-agent",
-  },
-  claude_code: {
-    detail: "Checks claude --version (binary reachable).",
-    cli: "claude",
-  },
-  codex: {
-    detail: "Checks codex --version (binary reachable).",
-    cli: "codex",
-  },
+const PRESET_CLI: Record<AgentPreset, string> = {
+  cursor: "cursor-agent",
+  claude_code: "claude",
+  codex: "codex",
 }
 
 const PRESET_ICON: Record<AgentPreset, React.ComponentType<{ className?: string }>> = {
@@ -210,7 +197,7 @@ function AgentRow({
   thisAgentStreaming: boolean
   canEnable: boolean
 }) {
-  const help = PRESET_HELP[agent.preset]
+  const cli = PRESET_CLI[agent.preset]
   const Icon = PRESET_ICON[agent.preset]
   const version = agent.lastTestOk ? (agent.lastTestOutput ?? null) : null
   const displayName = agent.name
@@ -239,10 +226,7 @@ function AgentRow({
           </div>
         }
         description={
-          <div className="space-y-1">
-            {/* <p className="text-[12px] leading-snug text-muted-foreground">{help.detail}</p> */}
-            <p className="font-mono text-[11px] text-muted-foreground/90">CLI: {help.cli}</p>
-          </div>
+          <p className="font-mono text-[11px] text-muted-foreground/90">CLI: {cli}</p>
         }
         titleClassName="font-medium"
       />
@@ -489,7 +473,7 @@ export function AgentsPanel() {
             to run <span className="font-mono text-[12px]">--version</span>. Live stdout/stderr appear in the terminal at the bottom.
           </p>
           <p className="text-[12px] text-muted-foreground">
-            Only one agent can be active at a time. Custom agent configuration will be documented later.
+            Only one default agent at a time. Custom agents will be documented later.
           </p>
         </div>
 
