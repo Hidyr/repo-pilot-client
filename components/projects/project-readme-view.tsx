@@ -5,6 +5,7 @@ import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 
 import { apiBase } from "@/lib/api/env"
+import { cn } from "@/lib/utils"
 
 import "github-markdown-css/github-markdown.css"
 
@@ -31,7 +32,7 @@ export function ProjectReadmeView({ projectId }: { projectId: string }) {
   }, [projectId])
 
   return (
-    <section className="readme-github-panel">
+    <section className="readme-github-panel min-w-0 w-full">
       <h2 className="mb-3 text-[13px] font-medium text-foreground">README</h2>
       {!readme ? (
         <p className="text-[12px] text-muted-foreground">Loading…</p>
@@ -40,14 +41,14 @@ export function ProjectReadmeView({ projectId }: { projectId: string }) {
           No README.md in the project root.
         </p>
       ) : (
-        <div className="overflow-hidden rounded-xl border border-border shadow-sm">
-          <div className="readme-github-scroll overflow-x-auto">
+        <div className="w-full min-w-0 overflow-hidden rounded-xl border border-border shadow-sm">
+          <div className="w-full min-w-0 overflow-x-auto overscroll-x-contain">
             <article
-              className="markdown-body !my-0 box-border min-w-[200px] max-w-[980px] px-4 py-6 md:px-10 md:py-8"
-              style={{
-                margin: "0 auto",
-                borderRadius: 0,
-              }}
+              className={cn(
+                "markdown-body !my-0 box-border w-full min-w-0 max-w-full px-3 py-5 sm:px-4 sm:py-6 md:px-6 md:py-8",
+                "[&_pre]:max-w-full [&_pre]:overflow-x-auto"
+              )}
+              style={{ borderRadius: 0 }}
             >
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}

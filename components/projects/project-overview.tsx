@@ -114,7 +114,7 @@ export function ProjectOverview({ project }: { project: Project }) {
   )
 
   return (
-    <div className="flex w-full flex-col gap-8">
+    <div className="flex w-full min-w-0 flex-col gap-8">
       <section className="space-y-4">
         <div className="space-y-1.5">
           <Label htmlFor="p-name">Name</Label>

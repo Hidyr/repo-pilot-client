@@ -24,6 +24,14 @@ export function ShellPage({
   className?: string
 }) {
   return (
-    <div className={cn("w-full", shellPageMaxWidth[maxWidth], className)}>{children}</div>
+    <div
+      className={cn(
+        "w-full min-w-0",
+        shellPageMaxWidth[maxWidth],
+        className
+      )}
+    >
+      {children}
+    </div>
   )
 }
