@@ -96,6 +96,16 @@ export function ScheduleConfigPanel({ project }: { project: Project }) {
           }
           return false
         }
+        const j = (await res.json().catch(() => null)) as {
+          data?: { enabled?: boolean }
+          meta?: { warning?: string }
+        } | null
+        if (j?.data && typeof j.data.enabled === "boolean") {
+          setAuto(j.data.enabled)
+        }
+        if (j?.meta?.warning) {
+          toast.message("Schedule saved", { description: j.meta.warning })
+        }
       }
       return true
     },
