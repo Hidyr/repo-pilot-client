@@ -20,6 +20,7 @@ import { useAppQueue } from "@/contexts/queue-refresh-context"
 import { pickFolder } from "@/lib/os/pick-folder"
 import { openDbFolder } from "@/lib/os/open-db-folder"
 import { setNativeMinimizeToTray } from "@/lib/os/minimize-to-tray"
+import { setNativeAutostart } from "@/lib/os/native-autostart"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -68,7 +69,7 @@ export default function SettingsPage() {
 
   const [maxRuns, setMaxRuns] = React.useState<string[]>(["4"])
   const [minimizeTray, setMinimizeTray] = React.useState(true)
-  const [autostart, setAutostart] = React.useState(false)
+  const [autostart, setAutostart] = React.useState(true)
   const [maxRunsEditable, setMaxRunsEditable] = React.useState(true)
   const [maxRunsLockReason, setMaxRunsLockReason] = React.useState("")
   const [gitCloneBaseDir, setGitCloneBaseDir] = React.useState("")
@@ -85,7 +86,9 @@ export default function SettingsPage() {
         const tray = d.minimize_to_tray === "true"
         setMinimizeTray(tray)
         void setNativeMinimizeToTray(tray)
-        setAutostart(d.autostart === "true")
+        const start = d.autostart === "true"
+        setAutostart(start)
+        void setNativeAutostart(start)
         setMaxRunsEditable(d.max_concurrent_runs_editable !== "false")
         setMaxRunsLockReason(d.max_concurrent_runs_lock_reason ?? "")
         if (typeof d.git_clone_base_dir === "string") setGitCloneBaseDir(d.git_clone_base_dir)
@@ -247,7 +250,7 @@ export default function SettingsPage() {
           <SettingsRow className="items-start">
             <SettingsRowText
               title="Launch RepoPilot on system startup"
-              description="App will start silently in the tray on login."
+              description="App will start silently in the tray on system startup."
             />
             <Checkbox
               checked={autostart}
@@ -255,6 +258,7 @@ export default function SettingsPage() {
                 const v = c === true
                 setAutostart(v)
                 void putSettings({ autostart: v })
+                void setNativeAutostart(v)
               }}
             />
           </SettingsRow>
