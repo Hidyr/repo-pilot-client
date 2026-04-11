@@ -23,7 +23,7 @@ import {
   SettingsRow,
   SettingsRowText,
 } from "@/components/design-system/settings-group"
-import type { Agent, Project } from "@/lib/api/types"
+import type { Agent, GitRunStartMode, Project } from "@/lib/api/types"
 import { apiBase } from "@/lib/api/env"
 import { toast } from "sonner"
 import Link from "next/link"
@@ -39,6 +39,8 @@ type ScheduleDto = {
   gitAutoCommit: boolean
   gitAutoPush: boolean
   gitAutoMerge: boolean
+  gitRunStartMode: GitRunStartMode
+  gitRunBranch: string | null
 }
 
 function padTimes(times: string[], n: number): string[] {
@@ -60,8 +62,11 @@ export function ScheduleConfigPanel({ project }: { project: Project }) {
   const [commit, setCommit] = React.useState(true)
   const [push, setPush] = React.useState(false)
   const [merge, setMerge] = React.useState(false)
+  const [runStartMode, setRunStartMode] = React.useState<GitRunStartMode>("current")
+  const [runBranch, setRunBranch] = React.useState("")
 
   const git = project.isGitRepo
+  const canSaveBranchMode = runStartMode !== "branch" || runBranch.trim().length > 0
   const skipAutosaveOnce = React.useRef(true)
 
   const buildPayload = React.useCallback((): ScheduleDto => {
@@ -78,8 +83,23 @@ export function ScheduleConfigPanel({ project }: { project: Project }) {
       gitAutoCommit: commit,
       gitAutoPush: push,
       gitAutoMerge: merge,
+      gitRunStartMode: runStartMode,
+      gitRunBranch: runStartMode === "branch" ? runBranch.trim() || null : null,
     }
-  }, [agentId, auto, intervalType, runsPerDay, featuresPerRun, executionTimes, pull, commit, push, merge])
+  }, [
+    agentId,
+    auto,
+    intervalType,
+    runsPerDay,
+    featuresPerRun,
+    executionTimes,
+    pull,
+    commit,
+    push,
+    merge,
+    runStartMode,
+    runBranch,
+  ])
 
   const saveSchedule = React.useCallback(
     async (payload: ScheduleDto, opts?: { notifyError?: boolean }) => {
@@ -92,7 +112,14 @@ export function ScheduleConfigPanel({ project }: { project: Project }) {
         })
         if (!res.ok) {
           if (opts?.notifyError !== false) {
-            toast.error("Could not save schedule", { description: res.statusText })
+            let description = res.statusText
+            try {
+              const errBody = (await res.json()) as { error?: { message?: string } }
+              if (errBody?.error?.message) description = errBody.error.message
+            } catch {
+              /* use statusText */
+            }
+            toast.error("Could not save schedule", { description })
           }
           return false
         }
@@ -148,6 +175,9 @@ export function ScheduleConfigPanel({ project }: { project: Project }) {
         setCommit(!!d.gitAutoCommit)
         setPush(!!d.gitAutoPush)
         setMerge(!!d.gitAutoMerge)
+        const m = d.gitRunStartMode
+        setRunStartMode(m === "from_base" || m === "branch" ? m : "current")
+        setRunBranch(typeof d.gitRunBranch === "string" ? d.gitRunBranch : "")
       } finally {
         if (!cancelled) setLoaded(true)
       }
@@ -164,6 +194,7 @@ export function ScheduleConfigPanel({ project }: { project: Project }) {
       skipAutosaveOnce.current = false
       return
     }
+    if (!canSaveBranchMode) return
     const t = window.setTimeout(() => {
       void saveSchedule(buildPayload(), { notifyError: false })
     }, 450)
@@ -180,6 +211,9 @@ export function ScheduleConfigPanel({ project }: { project: Project }) {
     commit,
     push,
     merge,
+    runStartMode,
+    runBranch,
+    canSaveBranchMode,
     buildPayload,
     saveSchedule,
   ])
@@ -358,6 +392,51 @@ export function ScheduleConfigPanel({ project }: { project: Project }) {
             </p>
           </div>
           <SettingsGroup className="rounded-none border-0">
+            <SettingsRow className="flex-wrap">
+              <SettingsRowText
+                title="Branch before run"
+                description={
+                  runStartMode === "current"
+                    ? "Stay on whatever branch is checked out; optional pull below still applies."
+                    : runStartMode === "from_base"
+                      ? `Check out ${project.defaultBranch ?? "main"}, pull if enabled, then create or reset a branch named from the feature title (e.g. "dark mode" → dark-mode) for each run. Your previous branch is restored afterward.`
+                      : "Check out the branch you name below before the agent runs; restored afterward."
+                }
+              />
+              <div className="flex min-w-0 w-full max-w-md flex-col gap-2 sm:w-auto">
+                <Select
+                  value={runStartMode}
+                  onValueChange={(v) => {
+                    if (v === "current" || v === "from_base" || v === "branch") {
+                      setRunStartMode(v)
+                    }
+                  }}
+                >
+                  <SelectTrigger size="sm" className="w-full sm:w-[280px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="current">Current branch</SelectItem>
+                    <SelectItem value="from_base">New branch from base</SelectItem>
+                    <SelectItem value="branch">Fixed branch</SelectItem>
+                  </SelectContent>
+                </Select>
+                {runStartMode === "branch" ? (
+                  <Input
+                    placeholder="e.g. develop"
+                    className="h-8 font-mono text-xs"
+                    value={runBranch}
+                    onChange={(e) => setRunBranch(e.target.value)}
+                    aria-label="Branch to check out"
+                  />
+                ) : null}
+                {runStartMode === "branch" && !runBranch.trim() ? (
+                  <p className="text-[11px] text-amber-600 dark:text-amber-500">
+                    Enter a branch name to save this option.
+                  </p>
+                ) : null}
+              </div>
+            </SettingsRow>
             <SettingsRow>
               <SettingsRowText title="Auto pull before run" />
               <Checkbox
@@ -450,6 +529,10 @@ export function ScheduleConfigPanel({ project }: { project: Project }) {
           type="button"
           size="sm"
           onClick={async () => {
+            if (!canSaveBranchMode) {
+              toast.error("Enter a branch name for fixed-branch mode")
+              return
+            }
             const ok = await saveSchedule(buildPayload(), { notifyError: true })
             if (ok) toast.success("Schedule saved")
           }}

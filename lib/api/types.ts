@@ -69,6 +69,8 @@ export type QueueSnapshot = {
   jobs: QueueJob[]
 }
 
+export type GitRunStartMode = "current" | "from_base" | "branch"
+
 export type Schedule = {
   enabled: boolean
   agentId?: string | null
@@ -80,6 +82,8 @@ export type Schedule = {
   gitAutoCommit: boolean
   gitAutoPush: boolean
   gitAutoMerge: boolean
+  gitRunStartMode: GitRunStartMode
+  gitRunBranch: string | null
 }
 
 export type AgentPreset = "cursor" | "claude_code" | "codex"
