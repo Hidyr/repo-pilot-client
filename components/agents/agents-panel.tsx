@@ -218,11 +218,6 @@ function AgentRow({
                 )
               }
             </div>
-            {!agent.enabled && !canEnable ? (
-              <span className="ml-1 rounded border border-border bg-muted/20 px-1.5 py-0.5 text-[10px] text-muted-foreground">
-                Not tested
-              </span>
-            ) : null}
           </div>
         }
         description={
