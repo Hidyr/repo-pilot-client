@@ -19,6 +19,7 @@ import { apiBase } from "@/lib/api/env"
 import { useAppQueue } from "@/contexts/queue-refresh-context"
 import { pickFolder } from "@/lib/os/pick-folder"
 import { openDbFolder } from "@/lib/os/open-db-folder"
+import { setNativeMinimizeToTray } from "@/lib/os/minimize-to-tray"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -81,7 +82,9 @@ export default function SettingsPage() {
         const d = j?.data
         if (!d) return
         if (d.max_concurrent_runs) setMaxRuns([d.max_concurrent_runs])
-        setMinimizeTray(d.minimize_to_tray === "true")
+        const tray = d.minimize_to_tray === "true"
+        setMinimizeTray(tray)
+        void setNativeMinimizeToTray(tray)
         setAutostart(d.autostart === "true")
         setMaxRunsEditable(d.max_concurrent_runs_editable !== "false")
         setMaxRunsLockReason(d.max_concurrent_runs_lock_reason ?? "")
@@ -237,6 +240,7 @@ export default function SettingsPage() {
                 const v = c === true
                 setMinimizeTray(v)
                 void putSettings({ minimize_to_tray: v })
+                void setNativeMinimizeToTray(v)
               }}
             />
           </SettingsRow>
