@@ -136,7 +136,7 @@ function FeatureCardMini({
       ) : null}
       {variant === "failed" ? (
         <div className="mb-2 text-[10px] text-destructive">
-          Failed — click to retry
+          Failed
         </div>
       ) : null}
       <p className="font-medium text-foreground">Dark mode toggle</p>

@@ -1,6 +1,7 @@
 import { apiBase } from "@/lib/api/env"
+import { mapFeatureRow } from "@/lib/api/map-feature"
 import { mapQueueApiToSnapshot } from "@/lib/api/queue-mapper"
-import type { Feature, FeatureStatus, Project, QueueSnapshot, Run } from "@/lib/api/types"
+import type { Feature, Project, QueueSnapshot, Run } from "@/lib/api/types"
 
 async function fetchJson<T>(path: string): Promise<T | null> {
   const b = apiBase()
@@ -31,20 +32,6 @@ export async function getProjectById(id: string): Promise<Project | undefined> {
     return j.data
   } catch {
     return undefined
-  }
-}
-
-function mapFeatureRow(row: Record<string, unknown>): Feature {
-  return {
-    id: String(row.id ?? ""),
-    projectId: String(row.projectId ?? ""),
-    title: String(row.title ?? ""),
-    description: (row.description as string | null) ?? null,
-    userPrompt: (row.userPrompt as string | null) ?? null,
-    status: (row.status as FeatureStatus) ?? "pending",
-    sortOrder: Number(row.sortOrder ?? 0),
-    createdAt: String(row.createdAt ?? ""),
-    updatedAt: String(row.updatedAt ?? ""),
   }
 }
 

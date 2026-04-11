@@ -24,7 +24,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import { Clock, Plus, X } from "lucide-react"
+import { Clock, Plus, Snowflake, X } from "lucide-react"
 import { toast } from "sonner"
 
 import { cn } from "@/lib/utils"
@@ -63,24 +63,29 @@ async function persistBoardState(
   nextMap: Record<string, Feature>,
   cols: Record<ColumnId, string[]>,
   refreshQueue: (() => Promise<void>) | null,
-  applyServerFeatures?: (list: Feature[]) => void
+  applyServerFeatures?: (list: Feature[]) => void,
+  onPersistError?: (err: unknown) => void
 ) {
   if (!projectId || !apiBase()) return
   const serverPatches: Feature[] = []
-  for (const id of Object.keys(nextMap)) {
-    if (prev[id]?.status !== nextMap[id]?.status) {
-      const updated = await putFeature(id, { status: nextMap[id]!.status })
-      if (updated) serverPatches.push(updated)
-    }
-  }
-  const orderedIds = [...cols.pending, ...cols.active, ...cols.done]
   try {
-    await postFeaturesReorder(projectId, orderedIds)
-  } catch {
-    /* reorder may fail; board stream will reconcile */
+    for (const id of Object.keys(nextMap)) {
+      if (prev[id]?.status !== nextMap[id]?.status) {
+        const updated = await putFeature(id, { status: nextMap[id]!.status })
+        if (updated) serverPatches.push(updated)
+      }
+    }
+    const orderedIds = [...cols.pending, ...cols.active, ...cols.done]
+    try {
+      await postFeaturesReorder(projectId, orderedIds)
+    } catch {
+      /* reorder may fail; board stream will reconcile */
+    }
+    if (serverPatches.length) applyServerFeatures?.(serverPatches)
+    await refreshQueue?.()
+  } catch (e) {
+    onPersistError?.(e)
   }
-  if (serverPatches.length) applyServerFeatures?.(serverPatches)
-  await refreshQueue?.()
 }
 
 const COLUMN_IDS = ["pending", "active", "done"] as const
@@ -182,6 +187,7 @@ function KanbanCard({ feature, projectId }: { feature: Feature; projectId?: stri
   const queued = feature.status === "queued"
   const running = feature.status === "in_progress"
   const failed = feature.status === "failed"
+  const frozen = feature.frozen
 
   const body =
     projectId != null && projectId !== "" ? (
@@ -203,9 +209,16 @@ function KanbanCard({ feature, projectId }: { feature: Feature; projectId?: stri
     <div
       className={cn(
         "rounded-lg border border-border bg-card p-3 text-xs shadow-sm",
-        failed && "border-destructive/40"
+        failed && "border-destructive/40",
+        frozen && "border-sky-500/35 bg-muted/30"
       )}
     >
+      {frozen ? (
+        <div className="mb-2 flex items-center gap-1.5">
+          <Snowflake className="size-3 text-sky-400/90" aria-hidden />
+          <span className="text-[10px] font-medium text-sky-300/90">Frozen</span>
+        </div>
+      ) : null}
       {queued ? (
         <div className="mb-2 flex items-center gap-1.5">
           <Clock className="size-3 text-muted-foreground" />
@@ -222,7 +235,7 @@ function KanbanCard({ feature, projectId }: { feature: Feature; projectId?: stri
         </div>
       ) : null}
       {failed ? (
-        <div className="mb-2 text-[10px] text-destructive">Failed — click to retry</div>
+        <div className="mb-2 text-[10px] text-destructive">Failed</div>
       ) : null}
       {body}
     </div>
@@ -467,13 +480,24 @@ export function KanbanBoard({
     setFeaturesById(nextMap)
 
     // Persist once per completed drop.
-    void persistBoardState(projectId, prevMap, nextMap, next, refreshQueue, (patches) => {
-      setFeaturesById((cur) => {
-        const merged = { ...cur }
-        for (const f of patches) merged[f.id] = f
-        return merged
-      })
-    })
+    void persistBoardState(
+      projectId,
+      prevMap,
+      nextMap,
+      next,
+      refreshQueue,
+      (patches) => {
+        setFeaturesById((cur) => {
+          const merged = { ...cur }
+          for (const f of patches) merged[f.id] = f
+          return merged
+        })
+      },
+      (err) => {
+        toast.error((err as Error)?.message ?? "Could not save board")
+        router.refresh()
+      }
+    )
   }
 
   const activeFeature = activeId ? featuresById[activeId] : null

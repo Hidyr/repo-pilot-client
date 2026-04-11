@@ -3,7 +3,7 @@
 import * as React from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, Trash2 } from "lucide-react"
+import { ArrowLeft, Snowflake, Sun, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
@@ -56,6 +56,7 @@ export function FeatureDetailView({
   const saveTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null)
   const descTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null)
   const [deleting, setDeleting] = React.useState(false)
+  const [freezing, setFreezing] = React.useState(false)
 
   React.useEffect(() => {
     setFeature(initialFeature)
@@ -110,6 +111,28 @@ export function FeatureDetailView({
 
   const boardHref = `/projects/${feature.projectId}/board`
 
+  const toggleFrozen = React.useCallback(async () => {
+    if (!apiBase()) return
+    setFreezing(true)
+    try {
+      const next = await putFeature(feature.id, { frozen: !feature.frozen })
+      if (next) {
+        setFeature(next)
+        toast.success(
+          next.frozen
+            ? "Feature frozen — automation will skip it until you unfreeze."
+            : "Feature unfrozen — it can be picked up again when it is pending and automation runs."
+        )
+        await refreshQueue?.()
+        router.refresh()
+      }
+    } catch (e) {
+      toast.error((e as Error)?.message ?? "Could not update freeze state")
+    } finally {
+      setFreezing(false)
+    }
+  }, [feature.id, feature.frozen, refreshQueue, router])
+
   return (
     <div className="space-y-8 pb-12">
       <div className="flex flex-wrap items-start justify-between gap-4">
@@ -127,6 +150,31 @@ export function FeatureDetailView({
           <div className="flex flex-wrap items-center gap-2">
             <h1 className="text-xl font-semibold tracking-tight text-foreground">{feature.title}</h1>
             <StatusBadge status={feature.status} className="text-[10px]" />
+            {feature.frozen ? (
+              <span className="rounded-md border border-sky-500/40 bg-sky-500/10 px-2 py-0.5 text-[10px] font-medium text-sky-300">
+                Frozen
+              </span>
+            ) : null}
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-sm"
+              disabled={!apiBase() || freezing}
+              title={
+                feature.frozen
+                  ? "Unfreeze — allow automation and runs to pick this feature again"
+                  : "Freeze — pause automation and queue runs"
+              }
+              className="shrink-0 text-muted-foreground/70 hover:text-sky-300 hover:bg-sky-500/10"
+              aria-label={feature.frozen ? "Unfreeze feature" : "Freeze feature"}
+              onClick={() => void toggleFrozen()}
+            >
+              {feature.frozen ? (
+                <Sun className="size-3.5 text-sky-300" />
+              ) : (
+                <Snowflake className="size-3.5" />
+              )}
+            </Button>
             <AlertDialog>
               <AlertDialogTrigger
                 render={
@@ -181,6 +229,15 @@ export function FeatureDetailView({
           </div>
         </div>
       </div>
+
+      {feature.frozen ? (
+        <p className="max-w-3xl text-[12px] leading-relaxed text-muted-foreground">
+          Scheduled automation will not enqueue this feature while it is frozen, and you cannot
+          drag it into “In progress” until you unfreeze. Freezing cancels a queued or active run for
+          this card. If the last two runs both fail, it is frozen automatically (a success in between
+          resets that pattern).
+        </p>
+      ) : null}
 
       <section className="space-y-2">
         <Label htmlFor="feature-desc" className="text-[13px] text-foreground">

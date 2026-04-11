@@ -3,6 +3,7 @@
 import * as React from "react"
 
 import { boardWebSocketUrl } from "@/lib/api/board-ws-url"
+import { mapFeatureRow } from "@/lib/api/map-feature"
 import type { Feature } from "@/lib/api/types"
 
 const RECONNECT_MS = 2000
@@ -44,7 +45,9 @@ export function useBoardStream(projectId: string, initial: Feature[]) {
           if (j.type !== "board") return
           if (j.projectId && j.projectId !== projectId) return
           const next = j.data?.features
-          if (Array.isArray(next)) setFeatures(next)
+          if (Array.isArray(next)) {
+            setFeatures(next.map((r) => mapFeatureRow(r as Record<string, unknown>)))
+          }
         } catch {
           /* ignore */
         }

@@ -24,6 +24,8 @@ export type Feature = {
   description: string | null
   userPrompt: string | null
   status: FeatureStatus
+  /** When true, automation and queue runs skip this feature until unfrozen. */
+  frozen: boolean
   sortOrder: number
   createdAt: string
   updatedAt: string

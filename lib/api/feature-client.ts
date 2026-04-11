@@ -1,21 +1,8 @@
 "use client"
 
 import { apiBase } from "@/lib/api/env"
+import { mapFeatureRow } from "@/lib/api/map-feature"
 import type { Feature, FeatureStatus } from "@/lib/api/types"
-
-function mapFeatureRow(row: Record<string, unknown>): Feature {
-  return {
-    id: String(row.id),
-    projectId: String(row.projectId ?? ""),
-    title: String(row.title ?? ""),
-    description: (row.description as string | null) ?? null,
-    status: row.status as FeatureStatus,
-    userPrompt: (row.userPrompt as string | null) ?? null,
-    sortOrder: Number(row.sortOrder ?? 0),
-    createdAt: String(row.createdAt ?? ""),
-    updatedAt: String(row.updatedAt ?? ""),
-  }
-}
 
 export async function putFeature(
   id: string,
@@ -24,6 +11,7 @@ export async function putFeature(
     title: string
     description: string | null
     userPrompt: string
+    frozen: boolean
   }>
 ): Promise<Feature | null> {
   const b = apiBase()
@@ -34,7 +22,14 @@ export async function putFeature(
     body: JSON.stringify(body),
   })
   if (!res.ok) {
-    throw new Error(`putFeature ${id}: ${res.status}`)
+    const j = (await res.json().catch(() => null)) as {
+      error?: { code?: string; message?: string }
+    } | null
+    const err = new Error(j?.error?.message ?? `putFeature ${id}: ${res.status}`) as Error & {
+      code?: string
+    }
+    err.code = j?.error?.code
+    throw err
   }
   const j = (await res.json()) as { data?: Record<string, unknown> }
   if (!j.data) return null
