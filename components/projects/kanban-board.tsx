@@ -75,7 +75,7 @@ async function persistBoardState(
         if (updated) serverPatches.push(updated)
       }
     }
-    const orderedIds = [...cols.pending, ...cols.active, ...cols.done]
+    const orderedIds = [...cols.pending, ...cols.active, ...cols.review, ...cols.done]
     try {
       await postFeaturesReorder(projectId, orderedIds)
     } catch {
@@ -88,7 +88,7 @@ async function persistBoardState(
   }
 }
 
-const COLUMN_IDS = ["pending", "active", "done"] as const
+const COLUMN_IDS = ["pending", "active", "review", "done"] as const
 type ColumnId = (typeof COLUMN_IDS)[number]
 
 function columnsFromFeatures(features: Feature[]): Record<ColumnId, string[]> {
@@ -99,6 +99,7 @@ function columnsFromFeatures(features: Feature[]): Record<ColumnId, string[]> {
     active: features
       .filter((f) => f.status === "in_progress" || f.status === "queued")
       .map((f) => f.id),
+    review: features.filter((f) => f.status === "review").map((f) => f.id),
     done: features.filter((f) => f.status === "done").map((f) => f.id),
   }
 }
@@ -111,7 +112,7 @@ function findContainer(
   columns: Record<ColumnId, string[]>,
   id: string
 ): ColumnId | undefined {
-  if (id === "pending" || id === "active" || id === "done") {
+  if (id === "pending" || id === "active" || id === "review" || id === "done") {
     return id
   }
   for (const col of COLUMN_IDS) {
@@ -139,6 +140,11 @@ function mergeStatusFromColumns(
     } else {
       next[id] = { ...f, status: "in_progress" as FeatureStatus }
     }
+  }
+  for (const id of cols.review) {
+    const f = next[id]
+    if (!f) continue
+    next[id] = { ...f, status: "review" as FeatureStatus }
   }
   for (const id of cols.done) {
     const f = next[id]
@@ -186,6 +192,7 @@ function FeatureColumn({
 function KanbanCard({ feature, projectId }: { feature: Feature; projectId?: string }) {
   const queued = feature.status === "queued"
   const running = feature.status === "in_progress"
+  const inReview = feature.status === "review"
   const failed = feature.status === "failed"
   const frozen = feature.frozen
 
@@ -231,6 +238,13 @@ function KanbanCard({ feature, projectId }: { feature: Feature; projectId?: stri
         <div className="mb-2 flex items-center gap-1.5">
           <StatusBadge status="in_progress" className="text-[10px]">
             Agent running…
+          </StatusBadge>
+        </div>
+      ) : null}
+      {inReview ? (
+        <div className="mb-2 flex items-center gap-1.5">
+          <StatusBadge status="review" className="text-[10px]">
+            Ready for your review
           </StatusBadge>
         </div>
       ) : null}
@@ -425,7 +439,12 @@ export function KanbanBoard({
 
       const overIndex = overItems.indexOf(overIdStr)
       let newIndex: number
-      if (overIdStr === "pending" || overIdStr === "active" || overIdStr === "done") {
+      if (
+        overIdStr === "pending" ||
+        overIdStr === "active" ||
+        overIdStr === "review" ||
+        overIdStr === "done"
+      ) {
         newIndex = overItems.length
       } else {
         const isBelowOverItem =
@@ -544,10 +563,12 @@ export function KanbanBoard({
       onDragEnd={handleDragEnd}
     >
       <div className="flex flex-col gap-4 lg:flex-row">
-        {(Object.entries({ pending: "Pending", active: "In progress", done: "Done" }) as [
-          ColumnId,
-          string,
-       ][]).map(([columnId, title]) => (
+        {(Object.entries({
+          pending: "Pending",
+          active: "In progress",
+          review: "Review",
+          done: "Done",
+        }) as [ColumnId, string][]).map(([columnId, title]) => (
           <FeatureColumn
             key={columnId}
             columnId={columnId}

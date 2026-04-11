@@ -1,7 +1,7 @@
 "use client"
 
 import { cva, type VariantProps } from "class-variance-authority"
-import { Check, Clock, Minus, XCircle } from "lucide-react"
+import { Check, Clock, Eye, Minus, XCircle } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
@@ -18,6 +18,7 @@ const statusBadgeVariants = cva(
           "bg-muted/50 text-sky-300 [&_svg]:text-sky-300",
         active: "bg-muted/50 text-emerald-400 [&_svg]:text-emerald-400",
         running: "bg-muted/50 text-amber-300 [&_svg]:text-amber-300",
+        review: "text-amber-300 [&_svg]:text-amber-300",
         done: "text-emerald-400 [&_svg]:text-emerald-400",
         success: "text-emerald-400 [&_svg]:text-emerald-400",
         failed: "text-destructive [&_svg]:text-destructive/90",
@@ -63,6 +64,8 @@ function StatusBadge({
     <StatusDot className={cn("bg-amber-400", pulse && "animate-pulse")} />
   ) : s === "active" ? (
     <StatusDot className={cn("bg-emerald-400", pulse && "animate-pulse")} />
+  ) : s === "review" ? (
+    <Eye className="size-3 opacity-90" strokeWidth={2} />
   ) : s === "done" || s === "success" ? (
     <Check className="size-3" strokeWidth={2.5} />
   ) : s === "failed" ? (
@@ -85,7 +88,9 @@ function StatusBadge({
 }
 
 function formatLabel(status: string) {
-  return status.replace(/_/g, " ")
+  const s = status.replace(/_/g, " ")
+  if (!s.length) return s
+  return s[0]!.toUpperCase() + s.slice(1)
 }
 
 export { StatusBadge, statusBadgeVariants, StatusDot, formatLabel }

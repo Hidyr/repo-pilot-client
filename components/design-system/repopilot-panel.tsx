@@ -174,6 +174,7 @@ export function RepopilotPanel() {
             "in_progress",
             "active",
             "running",
+            "review",
             "done",
             "success",
             "failed",

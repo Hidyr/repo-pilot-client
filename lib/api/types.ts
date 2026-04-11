@@ -1,4 +1,4 @@
-export type FeatureStatus = "pending" | "queued" | "in_progress" | "done" | "failed"
+export type FeatureStatus = "pending" | "queued" | "in_progress" | "review" | "done" | "failed"
 
 export type Project = {
   id: string
