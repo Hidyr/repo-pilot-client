@@ -323,6 +323,7 @@ export default function SettingsPage() {
                             | null
                           toast.error("Reset failed", {
                             description: j?.error?.message ?? res.statusText,
+                            richColors: true,
                           })
                           return
                         }

@@ -433,12 +433,15 @@ export function AgentsPanel() {
               onToggleEnabled(agent.id, true)
             }
           } else {
-            toast.error("Activation failed", { description: r.error })
+            toast.error("Activation failed", {
+              description: r.error,
+              richColors: true,
+            })
           }
           void refresh()
         },
         onRequestError: (msg) => {
-          toast.error("Activation failed", { description: msg })
+          toast.error("Activation failed", { description: msg, richColors: true })
         },
       }).finally(() => {
         if (raf) {

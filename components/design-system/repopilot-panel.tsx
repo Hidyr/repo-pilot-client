@@ -420,7 +420,12 @@ export function RepopilotPanel() {
         <Button
           variant="chrome"
           size="sm"
-          onClick={() => toast.error("Clone failed", { description: "Invalid URL" })}
+          onClick={() =>
+            toast.error("Clone failed", {
+              description: "Invalid URL",
+              richColors: true,
+            })
+          }
         >
           Error toast
         </Button>
