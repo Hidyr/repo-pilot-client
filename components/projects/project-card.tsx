@@ -5,9 +5,11 @@ import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import { ProjectIdeLaunch } from "@/components/projects/project-ide-launch"
 import { cn } from "@/lib/utils"
 import type { Project } from "@/lib/api/types"
 import { apiBase } from "@/lib/api/env"
+import type { AvailableIdeClis } from "@/lib/os/ide-cli"
 
 function formatRelative(iso: string | null) {
   if (!iso) return "—"
@@ -23,9 +25,11 @@ function formatRelative(iso: string | null) {
 export function ProjectCard({
   project,
   layout = "list",
+  ideClis,
 }: {
   project: Project
   layout?: "list" | "grid"
+  ideClis: AvailableIdeClis
 }) {
   const lastRunAt = project.lastRun?.startedAt ?? null
   const actions = (
@@ -36,7 +40,7 @@ export function ProjectCard({
         className={cn(layout === "grid" && "flex-1")}
         render={<Link href={`/projects/${project.id}`} />}
       >
-        Open
+        View
       </Button>
       <Button
         size="sm"
@@ -87,8 +91,10 @@ export function ProjectCard({
   )
 
   return (
-    <Card className="h-full border-border bg-card transition-colors hover:bg-muted/20">
-      <CardContent className={cn("p-4", layout === "grid" && "flex h-full flex-col")}>
+    <Card className="h-full border-border bg-card pb-2 transition-colors hover:bg-muted/20">
+      <CardContent
+        className={cn("flex flex-col px-4 pt-4 pb-2", layout === "grid" && "h-full")}
+      >
         {layout === "list" ? (
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
@@ -139,7 +145,7 @@ export function ProjectCard({
             <div className="flex shrink-0 flex-col gap-2">{actions}</div>
           </div>
         ) : (
-          <>
+          <div className="flex min-h-0 flex-1 flex-col">
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
@@ -177,8 +183,9 @@ export function ProjectCard({
               Last run {formatRelative(lastRunAt)}
             </p>
             <div className="mt-auto flex gap-2 pt-4">{actions}</div>
-          </>
+          </div>
         )}
+        <ProjectIdeLaunch localPath={project.localPath} available={ideClis} />
       </CardContent>
     </Card>
   )

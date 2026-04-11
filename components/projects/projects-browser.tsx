@@ -6,6 +6,11 @@ import { FolderOpen, LayoutGrid, List, Search } from "lucide-react"
 import { AddProjectDialog } from "@/components/projects/add-project-dialog"
 import { ProjectCard } from "@/components/projects/project-card"
 import type { Project } from "@/lib/api/types"
+import {
+  EMPTY_IDE_CLIS,
+  fetchAvailableIdeClis,
+  type AvailableIdeClis,
+} from "@/lib/os/ide-cli"
 import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -28,6 +33,7 @@ export function ProjectsBrowser({ projects }: { projects: Project[] }) {
   const [query, setQuery] = React.useState("")
   const [filter, setFilter] = React.useState<ProjectFilter>("all")
   const [layout, setLayout] = React.useState<string[]>(["list"])
+  const [ideClis, setIdeClis] = React.useState<AvailableIdeClis>({ ...EMPTY_IDE_CLIS })
 
   React.useEffect(() => {
     try {
@@ -37,6 +43,19 @@ export function ProjectsBrowser({ projects }: { projects: Project[] }) {
       }
     } catch {
       /* ignore */
+    }
+  }, [])
+
+  React.useEffect(() => {
+    let cancelled = false
+    void (async () => {
+      const { isTauri } = await import("@tauri-apps/api/core")
+      if (!isTauri() || cancelled) return
+      const v = await fetchAvailableIdeClis()
+      if (!cancelled) setIdeClis(v)
+    })()
+    return () => {
+      cancelled = true
     }
   }, [])
 
@@ -178,7 +197,11 @@ export function ProjectsBrowser({ projects }: { projects: Project[] }) {
         >
           {filtered.map((p) => (
             <li key={p.id} className={cn(isGrid && "h-full min-h-0")}>
-              <ProjectCard project={p} layout={isGrid ? "grid" : "list"} />
+              <ProjectCard
+                project={p}
+                layout={isGrid ? "grid" : "list"}
+                ideClis={ideClis}
+              />
             </li>
           ))}
         </ul>
