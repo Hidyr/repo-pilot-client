@@ -281,7 +281,7 @@ export function AddProjectDialog() {
                 {tab === "git" ? "Cloning…" : "Adding…"}
               </>
             ) : tab === "git" ? (
-              "Clone & add"
+              "Add Repo"
             ) : (
               "Add project"
             )}
