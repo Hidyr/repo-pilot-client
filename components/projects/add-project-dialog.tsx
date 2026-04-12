@@ -133,11 +133,11 @@ export function AddProjectDialog() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="git-clone-path">Clone into folder</Label>
+              <Label htmlFor="git-clone-path">Clone into folder (optional)</Label>
               <div className="flex gap-2">
                 <Input
                   id="git-clone-path"
-                  placeholder="(optional) Parent folder; repo is cloned as a subfolder"
+                  placeholder="~/projects/<repo>"
                   className="font-mono text-xs"
                   disabled={saving}
                   value={clonePath}
@@ -159,11 +159,6 @@ export function AddProjectDialog() {
                   Browse
                 </Button>
               </div>
-              <p className="text-[11px] text-muted-foreground">
-                Browse picks a parent directory; the remote is cloned into{" "}
-                <span className="font-mono">&lt;that-folder&gt;/&lt;repo-name&gt;</span>. Leave blank
-                to use your default clone folder (Settings).
-              </p>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="git-name">Name</Label>
