@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import {
@@ -389,6 +389,8 @@ export function KanbanBoard({
   const [columns, setColumns] = useState<Record<ColumnId, string[]>>(() =>
     columnsFromFeatures(features)
   )
+  /** Latest column ids — updated synchronously in setColumns updaters so onDragEnd sees cross-column moves even before React re-renders. */
+  const columnsRef = useRef(columns)
   const [featuresById, setFeaturesById] = useState<Record<string, Feature>>(() =>
     featureMapFromList(features)
   )
@@ -403,7 +405,9 @@ export function KanbanBoard({
   const canCreate = Boolean(projectId && apiBase())
 
   useEffect(() => {
-    setColumns(columnsFromFeatures(features))
+    const nextCols = columnsFromFeatures(features)
+    columnsRef.current = nextCols
+    setColumns(nextCols)
     setFeaturesById(featureMapFromList(features))
   }, [features])
 
@@ -456,11 +460,13 @@ export function KanbanBoard({
       }
 
       const moved = activeItems[activeIndex]
-      return {
+      const next = {
         ...items,
         [activeCol]: activeItems.filter((id) => id !== moved),
         [overCol]: [...overItems.slice(0, newIndex), moved, ...overItems.slice(newIndex)],
       }
+      columnsRef.current = next
+      return next
     })
   }
 
@@ -471,7 +477,7 @@ export function KanbanBoard({
     // IMPORTANT: keep React state updaters pure. Calling async persistence inside a
     // setState updater can run multiple times in Strict Mode (double-invoked),
     // causing duplicate reorder/queue requests.
-    const current = columns
+    const current = columnsRef.current
     let next = current
 
     if (over) {
@@ -495,6 +501,7 @@ export function KanbanBoard({
     const prevMap = featuresById
     const nextMap = mergeStatusFromColumns(next, prevMap)
 
+    columnsRef.current = next
     setColumns(next)
     setFeaturesById(nextMap)
 
@@ -544,7 +551,9 @@ export function KanbanBoard({
       })
       setColumns((cur) => {
         if (cur.pending.includes(created.id)) return cur
-        return { ...cur, pending: [...cur.pending, created.id] }
+        const next = { ...cur, pending: [...cur.pending, created.id] }
+        columnsRef.current = next
+        return next
       })
       toast.success("Feature added")
     } catch (e) {
