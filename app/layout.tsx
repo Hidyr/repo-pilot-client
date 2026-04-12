@@ -4,6 +4,7 @@ import "./globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
+import { ProductionShellGuards } from "@/components/app/production-shell-guards";
 
 const themeInitScript = `
 (function(){try{
@@ -46,6 +47,7 @@ export default function RootLayout({
           suppressHydrationWarning
         />
         <ThemeProvider>
+          <ProductionShellGuards />
           <TooltipProvider>{children}</TooltipProvider>
           <Toaster position="bottom-right" closeButton />
         </ThemeProvider>
