@@ -15,7 +15,7 @@ export default async function ProjectBoardPage({
   return (
     <>
       <p className="mb-4 text-[13px] text-muted-foreground">
-        Drag cards between columns. Waiting (`queued`) and running (`in_progress`) cards are locked and synced live across windows.
+        Drag cards between columns.
       </p>
       <BoardLive projectId={projectId} initialFeatures={features} />
     </>
