@@ -2,15 +2,27 @@
 
 import * as React from "react"
 import ReactMarkdown from "react-markdown"
+import rehypeRaw from "rehype-raw"
+import rehypeSanitize from "rehype-sanitize"
 import remarkGfm from "remark-gfm"
 
 import { apiBase } from "@/lib/api/env"
+import { rehypeRewriteProjectReadmeAssets } from "@/lib/readme/rehype-rewrite-project-readme-assets"
 import { cn } from "@/lib/utils"
 
 import "github-markdown-css/github-markdown.css"
 
 export function ProjectReadmeView({ projectId }: { projectId: string }) {
   const [readme, setReadme] = React.useState<{ exists: boolean; markdown: string } | null>(null)
+  const b = apiBase()
+  const rehypePlugins = React.useMemo(
+    () => [
+      rehypeRaw,
+      rehypeRewriteProjectReadmeAssets(projectId, b),
+      rehypeSanitize,
+    ],
+    [projectId, b]
+  )
 
   React.useEffect(() => {
     const b = apiBase()
@@ -52,6 +64,7 @@ export function ProjectReadmeView({ projectId }: { projectId: string }) {
             >
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
+                rehypePlugins={rehypePlugins}
                 components={{
                   a: ({ href, children, ...props }) => {
                     const external =
