@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
@@ -18,6 +19,7 @@ import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { apiBase } from "@/lib/api/env"
 import { pickFolder } from "@/lib/os/pick-folder"
+import { cn } from "@/lib/utils"
 
 export function AddProjectDialog() {
   const [open, setOpen] = React.useState(false)
@@ -28,27 +30,37 @@ export function AddProjectDialog() {
   const [clonePath, setClonePath] = React.useState("")
   const [gitName, setGitName] = React.useState("")
   const [saving, setSaving] = React.useState(false)
+  const saveAbortRef = React.useRef<AbortController | null>(null)
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(next) => {
+        if (!next && saving) return
+        setOpen(next)
+      }}
+    >
       <DialogTrigger render={<Button size="sm" />}>Add project</DialogTrigger>
-      <DialogContent className="max-w-md sm:max-w-lg" showCloseButton>
+      <DialogContent className="max-w-md sm:max-w-lg" showCloseButton={!saving}>
         <DialogHeader>
           <DialogTitle>Add project</DialogTitle>
           <DialogDescription>
             Local folder or Git clone.
           </DialogDescription>
         </DialogHeader>
+        <div className="relative min-h-[220px]">
         <Tabs
           value={tab}
-          onValueChange={(v) => setTab(v as "local" | "git")}
-          className="gap-3"
+          onValueChange={(v) => {
+            if (!saving) setTab(v as "local" | "git")
+          }}
+          className={cn("gap-3", saving && "pointer-events-none opacity-50")}
         >
           <TabsList className="w-full">
-            <TabsTrigger value="local" className="flex-1">
+            <TabsTrigger value="local" className="flex-1" disabled={saving}>
               Local folder
             </TabsTrigger>
-            <TabsTrigger value="git" className="flex-1">
+            <TabsTrigger value="git" className="flex-1" disabled={saving}>
               Git repository
             </TabsTrigger>
           </TabsList>
@@ -60,6 +72,7 @@ export function AddProjectDialog() {
                   id="local-path"
                   placeholder="/Users/you/project"
                   className="font-mono text-xs"
+                  disabled={saving}
                   value={localPath}
                   onChange={(e) => {
                     const v = e.target.value
@@ -74,6 +87,7 @@ export function AddProjectDialog() {
                   type="button"
                   variant="outline"
                   size="sm"
+                  disabled={saving}
                   onClick={() => {
                     void (async () => {
                       const selected = await pickFolder()
@@ -93,6 +107,7 @@ export function AddProjectDialog() {
               <Input
                 id="local-name"
                 placeholder="Auto-filled from folder"
+                disabled={saving}
                 value={localName}
                 onChange={(e) => setLocalName(e.target.value)}
               />
@@ -105,6 +120,7 @@ export function AddProjectDialog() {
                 id="git-url"
                 placeholder="https://github.com/org/repo.git"
                 className="font-mono text-xs"
+                disabled={saving}
                 value={gitUrl}
                 onChange={(e) => {
                   const v = e.target.value
@@ -117,12 +133,13 @@ export function AddProjectDialog() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="git-clone-path">Local clone path</Label>
+              <Label htmlFor="git-clone-path">Clone into folder</Label>
               <div className="flex gap-2">
                 <Input
                   id="git-clone-path"
-                  placeholder="(optional) Defaults to ~/projects/<repo>"
+                  placeholder="(optional) Parent folder; repo is cloned as a subfolder"
                   className="font-mono text-xs"
+                  disabled={saving}
                   value={clonePath}
                   onChange={(e) => setClonePath(e.target.value)}
                 />
@@ -130,6 +147,7 @@ export function AddProjectDialog() {
                   type="button"
                   variant="outline"
                   size="sm"
+                  disabled={saving}
                   onClick={() => {
                     void (async () => {
                       const selected = await pickFolder()
@@ -142,7 +160,9 @@ export function AddProjectDialog() {
                 </Button>
               </div>
               <p className="text-[11px] text-muted-foreground">
-                If you leave this blank, RepoPilot will clone into your configured default clone folder (Settings).
+                Browse picks a parent directory; the remote is cloned into{" "}
+                <span className="font-mono">&lt;that-folder&gt;/&lt;repo-name&gt;</span>. Leave blank
+                to use your default clone folder (Settings).
               </p>
             </div>
             <div className="space-y-1.5">
@@ -150,15 +170,46 @@ export function AddProjectDialog() {
               <Input
                 id="git-name"
                 placeholder="Auto-filled from repo URL"
+                disabled={saving}
                 value={gitName}
                 onChange={(e) => setGitName(e.target.value)}
               />
             </div>
           </TabsContent>
         </Tabs>
+        {saving ? (
+          <div
+            className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-lg bg-popover/95 px-6 text-center ring-1 ring-foreground/10 backdrop-blur-sm"
+            aria-live="polite"
+            aria-busy="true"
+          >
+            <Loader2 className="size-9 animate-spin text-primary" aria-hidden />
+            <div className="space-y-1">
+              <p className="text-sm font-medium">
+                {tab === "git" ? "Cloning repository…" : "Adding project…"}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {tab === "git"
+                  ? "Large repositories can take several minutes. You can stop waiting below; the server may still finish cloning in the background."
+                  : "Validating path and saving to RepoPilot."}
+              </p>
+            </div>
+          </div>
+        ) : null}
+        </div>
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-            Cancel
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => {
+              if (saving) {
+                saveAbortRef.current?.abort()
+                return
+              }
+              setOpen(false)
+            }}
+          >
+            {saving ? "Run in background" : "Cancel"}
           </Button>
           <Button
             type="button"
@@ -172,6 +223,8 @@ export function AddProjectDialog() {
                   })
                   return
                 }
+                const ac = new AbortController()
+                saveAbortRef.current = ac
                 setSaving(true)
                 try {
                   const payload =
@@ -191,6 +244,7 @@ export function AddProjectDialog() {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(payload),
+                    signal: ac.signal,
                   })
                   const j = (await r.json().catch(() => null)) as
                     | { data?: unknown; error?: { message?: string } }
@@ -205,15 +259,32 @@ export function AddProjectDialog() {
                   setOpen(false)
                   // Let the server component page refetch
                   window.location.reload()
-                } catch {
+                } catch (e: unknown) {
+                  const aborted =
+                    (e instanceof DOMException && e.name === "AbortError") ||
+                    (e instanceof Error && e.name === "AbortError")
+                  if (aborted) {
+                    toast.message("Stopped waiting for the server")
+                    return
+                  }
                   toast.error("Could not add project", { description: "Network error" })
                 } finally {
                   setSaving(false)
+                  saveAbortRef.current = null
                 }
               })()
             }}
           >
-            {tab === "git" ? "Clone & add" : "Add project"}
+            {saving ? (
+              <>
+                <Loader2 className="size-4 animate-spin" aria-hidden />
+                {tab === "git" ? "Cloning…" : "Adding…"}
+              </>
+            ) : tab === "git" ? (
+              "Clone & add"
+            ) : (
+              "Add project"
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>
