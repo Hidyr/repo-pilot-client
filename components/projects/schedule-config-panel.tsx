@@ -59,7 +59,7 @@ export function ScheduleConfigPanel({ project }: { project: Project }) {
   const [featuresPerRun, setFeaturesPerRun] = React.useState(1)
   const [executionTimes, setExecutionTimes] = React.useState<string[]>(["09:00", "18:00"])
   const [pull, setPull] = React.useState(true)
-  const [commit, setCommit] = React.useState(true)
+  const [commit, setCommit] = React.useState(false)
   const [push, setPush] = React.useState(false)
   const [merge, setMerge] = React.useState(false)
   const [runStartMode, setRunStartMode] = React.useState<GitRunStartMode>("current")
