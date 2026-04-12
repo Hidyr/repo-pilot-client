@@ -110,7 +110,7 @@ export function ProjectsBrowser({ projects }: { projects: Project[] }) {
     <>
       <div className="mb-4 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <p className="text-[13px] text-muted-foreground lg:max-w-md">
-          Local-first projects and feature automation.
+          Projects.
         </p>
         <AddProjectDialog />
       </div>

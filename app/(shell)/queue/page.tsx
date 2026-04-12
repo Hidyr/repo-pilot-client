@@ -9,12 +9,6 @@ export default async function QueuePage() {
 
   return (
     <ShellPage maxWidth="standard">
-      <p className="mb-6 text-[13px] text-muted-foreground">
-        Live queue mirrors the bar at the bottom. The app shell uses a WebSocket to{" "}
-        <code className="font-mono text-[11px] text-muted-foreground">/api/queue/ws</code>
-        ; <code className="font-mono text-[11px] text-muted-foreground">GET /api/queue</code> is
-        for snapshots and manual refresh.
-      </p>
       <div className="rounded-lg border border-border bg-card">
         <div className="px-4 py-3 text-[13px] font-medium">
           Jobs

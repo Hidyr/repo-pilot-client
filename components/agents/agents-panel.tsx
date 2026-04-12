@@ -464,17 +464,6 @@ export function AgentsPanel() {
           terminalOpen && (terminalCollapsed ? "pb-11" : "pb-[min(40vh,22rem)]")
         )}
       >
-        <div className="mb-6 space-y-2">
-          <p className="text-[13px] text-muted-foreground">
-            Choose one built-in coding agent on the machine that runs the RepoPilot API. Install and log
-            in to the CLI first, then click <span className="font-medium text-foreground">Activate agent</span>{" "}
-            to run <span className="font-mono text-[12px]">--version</span>. Live stdout/stderr appear in the terminal at the bottom.
-          </p>
-          <p className="text-[12px] text-muted-foreground">
-            Only one default agent at a time. Custom agents will be documented later.
-          </p>
-        </div>
-
         <SettingsGroup>
           {loading ? (
             <SettingsRow>
