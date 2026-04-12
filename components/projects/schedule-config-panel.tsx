@@ -294,7 +294,14 @@ export function ScheduleConfigPanel({ project }: { project: Project }) {
       </div>
       <SettingsGroup className="rounded-none border-0">
         <SettingsRow className="flex-wrap">
-          <SettingsRowText title="Interval type" />
+          <SettingsRowText
+            title="Interval type"
+            description={
+              intervalType === "fixed"
+                ? "You set each run’s clock time below; the same times repeat every day."
+                : "Clock times are chosen automatically when the schedule is saved and repeat daily until you change timing again."
+            }
+          />
           <Select
             value={intervalType}
             onValueChange={(v) => {
@@ -311,7 +318,14 @@ export function ScheduleConfigPanel({ project }: { project: Project }) {
           </Select>
         </SettingsRow>
         <SettingsRow className="flex-wrap">
-          <SettingsRowText title="Runs per day" />
+          <SettingsRowText
+            title="Runs per day"
+            description={
+              intervalType === "fixed"
+                ? "How many automation passes to run each day (1–4). Each slot has its own time below."
+                : "How many automation passes to run each day (1–4). Times are spread randomly through the day."
+            }
+          />
           <Select
             value={String(runsPerDay)}
             onValueChange={(v) => {
@@ -362,7 +376,10 @@ export function ScheduleConfigPanel({ project }: { project: Project }) {
           )}
         </SettingsRow>
         <SettingsRow className="flex-wrap">
-          <SettingsRowText title="Features per run" />
+          <SettingsRowText
+            title="Features per run"
+            description="How many pending features to work through in each scheduled pass (1–3)."
+          />
           <Select
             value={String(featuresPerRun)}
             onValueChange={(v) => {
