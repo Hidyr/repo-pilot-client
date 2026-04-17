@@ -2,6 +2,7 @@
 
 import * as React from "react"
 
+import { TimeOfDayPicker } from "@/components/projects/time-of-day-picker"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
@@ -360,13 +361,11 @@ export function ScheduleConfigPanel({ project }: { project: Project }) {
           {intervalType === "fixed" ? (
             <div className="flex flex-wrap items-center gap-2">
               {Array.from({ length: runsPerDay }, (_, i) => (
-                <Input
+                <TimeOfDayPicker
                   key={i}
-                  type="time"
-                  step={60}
-                  className="h-8 w-24 font-mono text-xs"
+                  className="shrink-0"
                   value={executionTimes[i] ?? "09:00"}
-                  onChange={(e) => setTimeAt(i, e.target.value)}
+                  onChange={(v) => setTimeAt(i, v)}
                   aria-label={`Run time ${i + 1}`}
                 />
               ))}
